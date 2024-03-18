@@ -1,5 +1,5 @@
 import 'dart:ffi';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:time_sheet_flutter_application/admin_panel.dart';
 import 'package:time_sheet_flutter_application/splash_screen.dart';
@@ -10,6 +10,44 @@ class LoginDemo extends StatefulWidget {
 }
 
 class _LoginDemoState extends State<LoginDemo> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _signInWithEmailAndPassword() async {
+    try {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text;
+
+      print('Email: $email, Password: $password');
+
+      if (email.isEmpty || password.isEmpty) {
+        print('Email or password is empty');
+        return;
+      }
+
+      UserCredential? userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (userCredential != null && userCredential.user != null) {
+        print('User signed in successfully: ${userCredential.user!.uid}');
+        // Navigate to the admin dashboard or perform other actions on successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminPanel()),
+        );
+      } else {
+        print('User credential does not contain a valid user');
+        // Handle the scenario where the user is null
+      }
+    } catch (e) {
+      print('Error signing in: $e');
+      // Handle the error, show a snackbar, or perform other actions
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,37 +76,52 @@ class _LoginDemoState extends State<LoginDemo> {
               //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Email', // Label text displayed above the input field
-                  hintText: 'Enter valid email id as abc@gmail.com', // Hint text displayed inside the input field
-                  border: OutlineInputBorder( // Defines the border properties
-                    borderRadius: BorderRadius.circular(18), // Sets the border radius to create rounded corners
+                  labelText:
+                      'Email', // Label text displayed above the input field
+                  hintText: 'Enter valid email id as abc@gmail.com',
+                  // Hint text displayed inside the input field
+                  border: OutlineInputBorder(
+                    // Defines the border properties
+                    borderRadius: BorderRadius.circular(
+                        18), // Sets the border radius to create rounded corners
                     borderSide: BorderSide.none, // Hides the border line
                   ),
-                  fillColor: Colors.lightBlue .withOpacity(0.1), // Sets the fill color of the input field with opacity
-                  filled: true, // Specifies that the input field should be filled with color
-                  prefixIcon: const Icon(Icons.person), // Icon displayed at the beginning of the input field
+                  fillColor: Colors.lightBlue.withOpacity(
+                      0.1), // Sets the fill color of the input field with opacity
+                  filled:
+                      true, // Specifies that the input field should be filled with color
+                  prefixIcon: const Icon(Icons
+                      .person), // Icon displayed at the beginning of the input field
                 ),
               ),
-
-              ),
-
+            ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
-                obscureText: true, // Indicates that the text entered in the field should be obscured (hidden)
+                controller: _passwordController,
+                obscureText:
+                    true, // Indicates that the text entered in the field should be obscured (hidden)
                 decoration: InputDecoration(
-                  labelText: 'Password', // Label text displayed above the input field
-                  hintText: 'Enter secure password', // Hint text displayed inside the input field
-                  border: OutlineInputBorder( // Defines the border properties
-                    borderRadius: BorderRadius.circular(18), // Sets the border radius to create rounded corners
+                  labelText:
+                      'Password', // Label text displayed above the input field
+                  hintText:
+                      'Enter secure password', // Hint text displayed inside the input field
+                  border: OutlineInputBorder(
+                    // Defines the border properties
+                    borderRadius: BorderRadius.circular(
+                        18), // Sets the border radius to create rounded corners
                     borderSide: BorderSide.none, // Hides the border line
                   ),
-                  fillColor: Colors.blue .withOpacity(0.1), // Sets the fill color of the input field with opacity
-                  filled: true, // Specifies that the input field should be filled with color
-                  prefixIcon: const Icon(Icons.password), // Icon displayed at the beginning of the input field
+                  fillColor: Colors.blue.withOpacity(
+                      0.1), // Sets the fill color of the input field with opacity
+                  filled:
+                      true, // Specifies that the input field should be filled with color
+                  prefixIcon: const Icon(Icons
+                      .password), // Icon displayed at the beginning of the input field
                 ),
               ),
             ),
@@ -79,29 +132,28 @@ class _LoginDemoState extends State<LoginDemo> {
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => admin_panel()),
-                  );
-                },
+                onPressed: _signInWithEmailAndPassword,
                 child: Text(
                   'Login', // Text displayed on the button
-                  style: TextStyle( // Use TextStyle instead of ButtonStyle
+                  style: TextStyle(
+                    // Use TextStyle instead of ButtonStyle
                     // Define text style properties here
                     fontSize: 23, // Example font size
                     fontWeight: FontWeight.bold, // Example font weight
                     color: Colors.white, // Example text color
                   ),
                 ),
-                style: ButtonStyle( // Apply button style properties here if needed
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent ), // Example background color
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(vertical: 8)), // Example padding
-                  shape: MaterialStateProperty.all<OutlinedBorder>(StadiumBorder()), // Example shape
+                style: ButtonStyle(
+                  // Apply button style properties here if needed
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.blueAccent), // Example background color
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                      EdgeInsets.symmetric(vertical: 8)), // Example padding
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                      StadiumBorder()), // Example shape
                 ),
               ),
             ),
-
           ],
         ),
       ),
