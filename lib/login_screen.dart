@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:time_sheet_flutter_application/User_panel.dart';
 import 'package:time_sheet_flutter_application/admin_panel.dart';
 import 'package:time_sheet_flutter_application/splash_screen.dart';
 
@@ -25,19 +26,27 @@ class _LoginDemoState extends State<LoginDemo> {
         return;
       }
 
-      UserCredential? userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       if (userCredential != null && userCredential.user != null) {
         print('User signed in successfully: ${userCredential.user!.uid}');
-        // Navigate to the admin dashboard or perform other actions on successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AdminPanel()),
-        );
+
+        // Check the user's role and navigate accordingly
+        if (isAdmin(email)) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminPanel()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => UserPanel()),
+          );
+        }
       } else {
         print('User credential does not contain a valid user');
         // Handle the scenario where the user is null
@@ -46,6 +55,15 @@ class _LoginDemoState extends State<LoginDemo> {
       print('Error signing in: $e');
       // Handle the error, show a snackbar, or perform other actions
     }
+  }
+
+  bool isAdmin(String email) {
+    // Implement your logic to determine if the user is an admin
+    // For example, you can check if the user's email matches the admin email
+    // Return true if the user is an admin, false otherwise
+    // Here's a simple example:
+    const List<String> adminEmails = ['rohitrthakur72@gmail.com']; // Replace with your admin email(s)
+    return adminEmails.contains(email);
   }
 
   @override

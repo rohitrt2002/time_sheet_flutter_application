@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:time_sheet_flutter_application/Employee_data.dart';
+import 'package:time_sheet_flutter_application/add_role.dart';
+import 'package:time_sheet_flutter_application/project_data.dart';
 
 class AdminPanel extends StatefulWidget {
   AdminPanel({Key? key, this.title}) : super(key: key);
@@ -17,6 +21,10 @@ class _AdminPanelState extends State<AdminPanel> {
 
   void _addEmployee(String firstName, String lastName, String email, String role, String joiningDate, String empId, String mobile, String password) async {
     try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       await _firestore.collection('employees').add({
         'firstName': firstName,
         'lastName': lastName,
@@ -44,6 +52,8 @@ class _AdminPanelState extends State<AdminPanel> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = [
+      EmployeeList(),
+      ProjectList(),
       Text(
         'Dashboard Content',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -56,20 +66,23 @@ class _AdminPanelState extends State<AdminPanel> {
         'NO item available for Teamsheets',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      Text(
-        'NO item available for Add Project +',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+      AddProjectScreen(),
       // Content for Add Employee
       AddEmployeeForm(addEmployee: _addEmployee),
-      Text(
-        'NO item available for Add Role +',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+      AssignRolesScreen(),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Admin Page")),
+      appBar: AppBar(title: const Text("Admin Page"),
+        actions: [
+      IconButton(
+      icon: Icon(Icons.person), // Use any icon you prefer for the profile
+      onPressed: () {
+        // Add your action when the profile icon is tapped
+      },
+    ),
+    ],),
+
       body: Center(
         child: _widgetOptions[_selectedIndex],
       ),
@@ -94,34 +107,44 @@ class _AdminPanelState extends State<AdminPanel> {
               ),
             ),
             ListTile(
-              title: const Text('Dashboard'),
+              title: const Text('Employee'),
               selected: _selectedIndex == 0,
               onTap: () => _onItemTapped(0),
             ),
             ListTile(
-              title: const Text('Team'),
+              title: const Text('Project'),
               selected: _selectedIndex == 1,
               onTap: () => _onItemTapped(1),
             ),
             ListTile(
-              title: const Text('Teamsheets'),
+              title: const Text('Role'),
               selected: _selectedIndex == 2,
               onTap: () => _onItemTapped(2),
             ),
             ListTile(
-              title: const Text('Add Project +'),
+              title: const Text('Team'),
               selected: _selectedIndex == 3,
               onTap: () => _onItemTapped(3),
             ),
             ListTile(
-              title: const Text('Add Employee +'),
+              title: const Text('Teamsheets'),
               selected: _selectedIndex == 4,
               onTap: () => _onItemTapped(4),
             ),
             ListTile(
-              title: const Text('Add Role +'),
+              title: const Text('Add Project +'),
               selected: _selectedIndex == 5,
               onTap: () => _onItemTapped(5),
+            ),
+            ListTile(
+              title: const Text('Add Employee +'),
+              selected: _selectedIndex == 6,
+              onTap: () => _onItemTapped(6),
+            ),
+            ListTile(
+              title: const Text('Add Role +'),
+              selected: _selectedIndex == 7,
+              onTap: () => _onItemTapped(7),
             ),
           ],
         ),
