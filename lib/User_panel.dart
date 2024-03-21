@@ -1,47 +1,62 @@
 import 'package:flutter/material.dart';
 class UserPanel extends StatefulWidget {
+  //final String firstName;
+ // final String lastName;
+
   const UserPanel({Key? key}) : super(key: key);
 
   @override
   State<UserPanel> createState() => _UserPanelState();
 }
-
 class _UserPanelState extends State<UserPanel> {
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = [
-    Text(
-      'Dashboard Content',
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-    ),
-    Text(
-    'Team Content',
-    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-    ),
+      Text(
+        'Dashboard Content',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      Text(
+        'Team Content',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
     ];
     return Scaffold(
-      appBar:  AppBar (title: Text("User Page"),),
-      body: Center (
-        child: _widgetOptions[_selectedIndex],
-      ),
-      drawer: Drawer (
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [DrawerHeader(
-              decoration : BoxDecoration(color: Colors.blue,),
-              child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.asset(
-            'assets/image/icons8-flutter-192(-xxxhdpi).png',
-            height: 100,
-            width: 80,
+      appBar: AppBar(
+        title: Text("User Page"),
+        actions: [
+          Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(''),
+            //Text('${widget.firstName} ${widget.lastName}'), // Display the user's email in the app bar
           ),
         ],
       ),
-          ),
+      body: Center(
+        child: _widgetOptions[_selectedIndex],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    'assets/image/icons8-flutter-192(-xxxhdpi).png',
+                    height: 100,
+                    width: 80,
+                  ),
+                ],
+              ),
+            ),
             ListTile(
               title: const Text('Project List'),
               selected: _selectedIndex == 0,
@@ -53,15 +68,14 @@ class _UserPanelState extends State<UserPanel> {
               onTap: () => _onItemTapped(1),
             ),
           ],
-
-        )
+        ),
       ),
-    ) ;
+    );
   }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 }
-

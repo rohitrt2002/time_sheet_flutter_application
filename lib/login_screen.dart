@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:time_sheet_flutter_application/User_panel.dart';
@@ -31,6 +32,9 @@ class _LoginDemoState extends State<LoginDemo> {
         email: email,
         password: password,
       );
+      //DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('employee').doc(userCredential.user!.uid).get();
+     // String firstName = userDoc['firstName'] ?? '';
+      //String lastName = userDoc['lastName'] ?? '';
 
       if (userCredential != null && userCredential.user != null) {
         print('User signed in successfully: ${userCredential.user!.uid}');
@@ -44,7 +48,9 @@ class _LoginDemoState extends State<LoginDemo> {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => UserPanel()),
+            MaterialPageRoute(
+              builder: (context) => UserPanel(/*firstName: firstName, lastName: lastName*/),
+            ),
           );
         }
       } else {
@@ -62,7 +68,7 @@ class _LoginDemoState extends State<LoginDemo> {
     // For example, you can check if the user's email matches the admin email
     // Return true if the user is an admin, false otherwise
     // Here's a simple example:
-    const List<String> adminEmails = ['rohitrthakur72@gmail.com']; // Replace with your admin email(s)
+    const List<String> adminEmails = ['rohitrthakur72@gmail.com','admin@gmail.com']; // Replace with your admin email(s)
     return adminEmails.contains(email);
   }
 

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_sheet_flutter_application/Employee_data.dart';
 import 'package:time_sheet_flutter_application/add_role.dart';
 import 'package:time_sheet_flutter_application/project_data.dart';
+import 'package:time_sheet_flutter_application/team.dart';
 
 class AdminPanel extends StatefulWidget {
   AdminPanel({Key? key, this.title}) : super(key: key);
@@ -54,14 +55,8 @@ class _AdminPanelState extends State<AdminPanel> {
     final List<Widget> _widgetOptions = [
       EmployeeList(),
       ProjectList(),
-      Text(
-        'Dashboard Content',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-      Text(
-        'Team Content',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+      RoleDataScreen(),
+      EmployeeDataScreen(),
       Text(
         'NO item available for Teamsheets',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -70,6 +65,7 @@ class _AdminPanelState extends State<AdminPanel> {
       // Content for Add Employee
       AddEmployeeForm(addEmployee: _addEmployee),
       AssignRolesScreen(),
+      AddTeamScreen(),
     ];
 
     return Scaffold(
@@ -145,6 +141,11 @@ class _AdminPanelState extends State<AdminPanel> {
               title: const Text('Add Role +'),
               selected: _selectedIndex == 7,
               onTap: () => _onItemTapped(7),
+            ),
+            ListTile(
+              title: const Text('Add Team +'),
+              selected: _selectedIndex == 8,
+              onTap: () => _onItemTapped(8),
             ),
           ],
         ),
