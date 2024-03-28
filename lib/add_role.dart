@@ -138,7 +138,7 @@ class RoleDataScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final teamData = teams[index].data() as Map<String, dynamic>;
               final teamName = teamData['role_type'] ?? 'Unnamed Team';
-              return _buildTeamTile(context, teamName);
+              return _buildTeamTile(context, teamName, teams[index].id);
             },
           );
         },
@@ -146,7 +146,7 @@ class RoleDataScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamTile(BuildContext context, String teamName) {
+  Widget _buildTeamTile(BuildContext context, String teamName, String teamId) {
     return ExpansionTile(
       title: Text(teamName),
       children: [
@@ -184,6 +184,18 @@ class RoleDataScreen extends StatelessWidget {
                     final employeeName = '${employeeData['firstName']} ${employeeData['lastName']}';
                     return ListTile(
                       title: Text(employeeName),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              // Delete the role
+                              _deleteRole(teamId);
+                            },
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );
@@ -193,5 +205,14 @@ class RoleDataScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _deleteRole(String roleId) async {
+    try {
+      await _firestore.collection('role').doc(roleId).delete();
+    } catch (error) {
+      print('Error deleting role: $error');
+      // Handle error as needed
+    }
   }
 }

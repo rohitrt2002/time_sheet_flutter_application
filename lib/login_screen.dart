@@ -32,9 +32,7 @@ class _LoginDemoState extends State<LoginDemo> {
         email: email,
         password: password,
       );
-      //DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('employee').doc(userCredential.user!.uid).get();
-     // String firstName = userDoc['firstName'] ?? '';
-      //String lastName = userDoc['lastName'] ?? '';
+
 
       if (userCredential != null && userCredential.user != null) {
         print('User signed in successfully: ${userCredential.user!.uid}');
@@ -49,8 +47,9 @@ class _LoginDemoState extends State<LoginDemo> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => UserPanel(/*firstName: firstName, lastName: lastName*/),
+              builder: (context) => UserPanel(userId: userCredential.user!.uid), // Pass the user ID here
             ),
+
           );
         }
       } else {

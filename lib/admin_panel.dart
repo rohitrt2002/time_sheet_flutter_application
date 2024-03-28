@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_sheet_flutter_application/Employee_data.dart';
 import 'package:time_sheet_flutter_application/add_role.dart';
+import 'package:time_sheet_flutter_application/login_screen.dart';
 import 'package:time_sheet_flutter_application/project_data.dart';
 import 'package:time_sheet_flutter_application/team.dart';
+import 'package:time_sheet_flutter_application/timesheetpaneladmin.dart';
 
 class AdminPanel extends StatefulWidget {
   AdminPanel({Key? key, this.title}) : super(key: key);
@@ -26,7 +28,8 @@ class _AdminPanelState extends State<AdminPanel> {
         email: email,
         password: password,
       );
-      await _firestore.collection('employees').add({
+      String userId = userCredential.user!.uid; // Get the user UID
+      await _firestore.collection('employees').doc(userId).set({
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
@@ -57,10 +60,7 @@ class _AdminPanelState extends State<AdminPanel> {
       ProjectList(),
       RoleDataScreen(),
       EmployeeDataScreen(),
-      Text(
-        'NO item available for Teamsheets',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+      timesheetPanelScreen(),
       AddProjectScreen(),
       // Content for Add Employee
       AddEmployeeForm(addEmployee: _addEmployee),
@@ -71,12 +71,22 @@ class _AdminPanelState extends State<AdminPanel> {
     return Scaffold(
       appBar: AppBar(title: const Text("Admin Page"),
         actions: [
-      IconButton(
-      icon: Icon(Icons.person), // Use any icon you prefer for the profile
-      onPressed: () {
-        // Add your action when the profile icon is tapped
-      },
-    ),
+          IconButton(
+            icon: Icon(Icons.exit_to_app), // Use any icon you prefer for the profile
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => LoginDemo(), // Replace 'YourLoginPage()' with the actual constructor of your login page
+                  ),
+                );
+              } catch (e) {
+                print('Error signing out: $e');
+                // Handle error if necessary
+              }
+            },
+          ),
     ],),
 
       body: Center(
