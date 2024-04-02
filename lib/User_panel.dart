@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_sheet_flutter_application/login_screen.dart';
 import 'package:time_sheet_flutter_application/project_list_user.dart';
 import 'package:time_sheet_flutter_application/time_sheet_user.dart';
@@ -55,19 +56,22 @@ class _UserPanelState extends State<UserPanel> {
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app), // Use any icon you prefer for the profile
-            onPressed: () async {
-              try {
-                await FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => LoginDemo(), // Replace 'YourLoginPage()' with the actual constructor of your login page
-                  ),
-                );
-              } catch (e) {
-                print('Error signing out: $e');
-                // Handle error if necessary
-              }
-            },
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.remove('email');
+                  prefs.remove('password');
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => LoginDemo(), // Replace 'YourLoginPage()' with the actual constructor of your login page
+                    ),
+                  );
+                } catch (e) {
+                  print('Error signing out: $e');
+                  // Handle error if necessary
+                }
+              },
           ),
         ],
       ),
@@ -98,12 +102,22 @@ class _UserPanelState extends State<UserPanel> {
             ListTile(
               title: const Text('Project List'),
               selected: _selectedIndex == 0,
-              onTap: () => _onItemTapped(0),
+                onTap: () {
+                  // Update the state of the app
+                  _onItemTapped(0);
+                  // Then close the drawer
+                  Navigator.pop(context);
+                }
             ),
             ListTile(
               title: const Text('Time sheet List'),
               selected: _selectedIndex == 1,
-              onTap: () => _onItemTapped(1),
+                onTap: () {
+                  // Update the state of the app
+                  _onItemTapped(1);
+                  // Then close the drawer
+                  Navigator.pop(context);
+                }
             ),
           ],
         ),

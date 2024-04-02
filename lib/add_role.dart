@@ -1,218 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AssignRolesScreen extends StatefulWidget {
+class AddRoleScreen extends StatefulWidget {
   @override
-  _AssignRolesScreenState createState() => _AssignRolesScreenState();
+  _AddRoleScreenState createState() => _AddRoleScreenState();
 }
 
-class _AssignRolesScreenState extends State<AssignRolesScreen> {
+class _AddRoleScreenState extends State<AddRoleScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late TextEditingController _projectNameController;
 
-  List<String> _selectedEmployees = [];
-  Map<String, String> _selectedRoles = {};
-  TextEditingController _roleController = TextEditingController();
+  String? _selectedEmployee;
+  String? _selectedRole;
+
+  // Define list of roles
+  List<String> _roles = ['PM', 'QA', 'DEV', 'BA', 'Designer', 'Tech Lead'];
+
+  @override
+  void initState() {
+    super.initState();
+    _projectNameController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Assign Roles'),
+        title: Text('Add Project'),
       ),
-      body: ListView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: _roleController,
-                onChanged: (value) {
-                  // Update the role for all employees as the user types
-                  setState(() {
-                    _selectedEmployees.forEach((employeeId) {
-                      _selectedRoles[employeeId] = value;
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Select Employee:'),
+            SizedBox(height: 8),
+            StreamBuilder<QuerySnapshot>(
+              stream: _firestore.collection('employees').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+                final employees = snapshot.data!.docs;
+                return DropdownButtonFormField<String>(
+                  value: _selectedEmployee,
+                  hint: Text('Select Employee'),
+                  onChanged: (selectedEmployee) {
+                    setState(() {
+                      _selectedEmployee = selectedEmployee;
                     });
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Type role ',
-                ),
-              ),
-              SizedBox(height: 16),
-              Text('Select Employees:'),
-              SizedBox(height: 8),
-              StreamBuilder<QuerySnapshot>(
-                stream: _firestore.collection('employees').snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
-                  }
-                  final employees = snapshot.data!.docs;
-                  return Column(
-                    children: employees.map<Widget>((employee) {
-                      final employeeData =
-                      employee.data() as Map<String, dynamic>;
-                      final employeeName =
-                          '${employeeData['firstName']} ${employeeData['lastName']}';
-                      return CheckboxListTile(
-                        title: Text(employeeName),
-                        value: _selectedEmployees.contains(employee.id),
-                        onChanged: (selected) {
-                          setState(() {
-                            if (selected == true) {
-                              _selectedEmployees.add(employee.id);
-                              _selectedRoles[employee.id] =
-                                  _roleController.text; // Assign role immediately when selecting
-                            } else {
-                              _selectedEmployees.remove(employee.id);
-                              _selectedRoles.remove(employee.id);
-                            }
-                          });
-                        },
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  _assignRoles();
-                },
-                child: Text('Assign Roles'),
-              ),
-            ],
-          ),
-        ],
+                  },
+                  items: employees.map<DropdownMenuItem<String>>((employee) {
+                    final employeeData = employee.data() as Map<String, dynamic>;
+                    final employeeName = '${employeeData['firstName']} ${employeeData['lastName']}';
+                    return DropdownMenuItem<String>(
+                      value: employee.id,
+                      child: Text(employeeName),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+            SizedBox(height: 16),
+            Text('Select Role:'),
+            SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: _selectedRole,
+              hint: Text('Select Role'),
+              onChanged: (selectedRole) {
+                setState(() {
+                  _selectedRole = selectedRole;
+                });
+              },
+              items: _roles.map<DropdownMenuItem<String>>((role) {
+                return DropdownMenuItem<String>(
+                  value: role,
+                  child: Text(role),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                _addRole();
+              },
+              child: Text('Assign Role'),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void _assignRoles() async {
-    try {
-      await _firestore.collection('role').add({
-        'role_type': _roleController.text,
-        'allocatedEmployees': _selectedEmployees,
-      });
+  void _addRole() async {
+    if (_selectedEmployee != null && _selectedRole != null) {
+      try {
+        // Add role to the selected employee
+        await _firestore.collection('employees').doc(_selectedEmployee).update({
+          'role': _selectedRole,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Role assigned successfully')),
+        );
+      } catch (e) {
+        print('Error assigning role: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to assign role')),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Role added successfully')),
-      );
-      // Navigate to a different screen here
-
-    } catch (e) {
-      print('Error adding Role type: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add Role type')),
+        SnackBar(content: Text('Please select an employee and a role')),
       );
     }
   }
 
   @override
   void dispose() {
-    _roleController.dispose();
+    _projectNameController.dispose();
     super.dispose();
-  }
-}
-
-class RoleDataScreen extends StatelessWidget {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Role'),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('role').snapshots(),
-        builder: (context, teamSnapshot) {
-          if (!teamSnapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          final teams = teamSnapshot.data!.docs;
-          return ListView.builder(
-            itemCount: teams.length,
-            itemBuilder: (context, index) {
-              final teamData = teams[index].data() as Map<String, dynamic>;
-              final teamName = teamData['role_type'] ?? 'Unnamed Team';
-              return _buildTeamTile(context, teamName, teams[index].id);
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildTeamTile(BuildContext context, String teamName, String teamId) {
-    return ExpansionTile(
-      title: Text(teamName),
-      children: [
-        StreamBuilder<QuerySnapshot>(
-          stream: _firestore
-              .collection('Role Type')
-              .where('role_type', isEqualTo: teamName)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            final teamDocs = snapshot.data!.docs;
-            if (teamDocs.isEmpty) {
-              return SizedBox();
-            }
-            final teamData = teamDocs.first.data() as Map<String, dynamic>;
-            final members = teamData['members'] as List<dynamic>;
-            return Column(
-              children: members.map<Widget>((memberId) {
-                return FutureBuilder<DocumentSnapshot>(
-                  future: _firestore.collection('employees').doc(memberId).get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (!snapshot.hasData) {
-                      return SizedBox();
-                    }
-                    final employeeData = snapshot.data!.data() as Map<String, dynamic>;
-                    final employeeName = '${employeeData['firstName']} ${employeeData['lastName']}';
-                    return ListTile(
-                      title: Text(employeeName),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              // Delete the role
-                              _deleteRole(teamId);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Future<void> _deleteRole(String roleId) async {
-    try {
-      await _firestore.collection('role').doc(roleId).delete();
-    } catch (error) {
-      print('Error deleting role: $error');
-      // Handle error as needed
-    }
   }
 }

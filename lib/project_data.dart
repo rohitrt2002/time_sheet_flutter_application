@@ -187,42 +187,58 @@ class _ProjectListState extends State<ProjectList> {
     );
   }
 
+  void _navigateToAddProjectScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddProjectScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: _projects.length,
-      itemBuilder: (context, index) {
-        final project = _projects[index];
-        final data = project.data();
-        if (data != null && data is Map<String, dynamic>) {
-          final projectName = data['projectName'] as String? ?? '';
-          final allocatedEmployees = _allocatedEmployeesMap[project.id] ?? [];
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Project List'),
+      ),
+      body: ListView.builder(
+        itemCount: _projects.length,
+        itemBuilder: (context, index) {
+          final project = _projects[index];
+          final data = project.data();
+          if (data != null && data is Map<String, dynamic>) {
+            final projectName = data['projectName'] as String? ?? '';
+            final allocatedEmployees = _allocatedEmployeesMap[project.id] ?? [];
 
-          return ListTile(
-            title: Text(projectName),
-            subtitle: Text('Allocated Employees: ${allocatedEmployees.join(', ')}'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    _editProject(project.id);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    _deleteProject(project.id);
-                  },
-                ),
-              ],
-            ),
-          );
-        } else {
-          return SizedBox(); // Return an empty widget if data is not valid
-        }
-      },
+            return ListTile(
+              title: Text(projectName),
+              subtitle: Text('Allocated Employees: ${allocatedEmployees.join(', ')}'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      _editProject(project.id);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      _deleteProject(project.id);
+                    },
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return SizedBox(); // Return an empty widget if data is not valid
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddProjectScreen,
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
@@ -286,4 +302,10 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
     print('New Project Name: $newProjectName');
     Navigator.pop(context);
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: ProjectList(),
+  ));
 }

@@ -1,10 +1,8 @@
-import 'dart:ffi';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_sheet_flutter_application/User_panel.dart';
 import 'package:time_sheet_flutter_application/admin_panel.dart';
-import 'package:time_sheet_flutter_application/splash_screen.dart';
 
 class LoginDemo extends StatefulWidget {
   @override
@@ -15,29 +13,33 @@ class _LoginDemoState extends State<LoginDemo> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signInWithEmailAndPassword() async {
+  @override
+  void initState() {
+    super.initState();
+    _checkLoggedIn();
+  }
+
+  Future<void> _checkLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    String? password = prefs.getString('password');
+    if (email != null && password != null) {
+      _signInWithEmailAndPassword(email, password);
+    }
+  }
+
+  Future<void> _signInWithEmailAndPassword(String email, String password) async {
     try {
-      String email = _emailController.text.trim();
-      String password = _passwordController.text;
-
-      print('Email: $email, Password: $password');
-
-      if (email.isEmpty || password.isEmpty) {
-        print('Email or password is empty');
-        return;
-      }
-
       UserCredential userCredential =
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      if (userCredential.user != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('email', email);
+        prefs.setString('password', password);
 
-
-      if (userCredential != null && userCredential.user != null) {
-        print('User signed in successfully: ${userCredential.user!.uid}');
-
-        // Check the user's role and navigate accordingly
         if (isAdmin(email)) {
           Navigator.pushReplacement(
             context,
@@ -47,28 +49,26 @@ class _LoginDemoState extends State<LoginDemo> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => UserPanel(userId: userCredential.user!.uid), // Pass the user ID here
+              builder: (context) => UserPanel(userId: userCredential.user!.uid),
             ),
-
           );
         }
-      } else {
-        print('User credential does not contain a valid user');
-        // Handle the scenario where the user is null
       }
     } catch (e) {
       print('Error signing in: $e');
-      // Handle the error, show a snackbar, or perform other actions
     }
   }
 
   bool isAdmin(String email) {
-    // Implement your logic to determine if the user is an admin
-    // For example, you can check if the user's email matches the admin email
-    // Return true if the user is an admin, false otherwise
-    // Here's a simple example:
-    const List<String> adminEmails = ['rohitrthakur72@gmail.com','admin@gmail.com']; // Replace with your admin email(s)
+    const List<String> adminEmails = ['rohitrthakur72@gmail.com','admin@gmail.com'];
     return adminEmails.contains(email);
+  }
+
+  Future<void> _signOut() async {
+    FirebaseAuth.instance.signOut();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('email');
+    prefs.remove('password');
   }
 
   @override
@@ -89,62 +89,44 @@ class _LoginDemoState extends State<LoginDemo> {
                   height: 150,
                   child: Image.asset(
                     'assets/image/icons8-flutter-192(-xxxhdpi).png',
-                    fit: BoxFit.cover, // Use BoxFit.cover to fill the container
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
             ),
             SizedBox(height: 70),
             Padding(
-              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText:
-                      'Email', // Label text displayed above the input field
+                  labelText: 'Email',
                   hintText: 'Enter valid email id as abc@gmail.com',
-                  // Hint text displayed inside the input field
                   border: OutlineInputBorder(
-                    // Defines the border properties
-                    borderRadius: BorderRadius.circular(
-                        18), // Sets the border radius to create rounded corners
-                    borderSide: BorderSide.none, // Hides the border line
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.lightBlue.withOpacity(
-                      0.1), // Sets the fill color of the input field with opacity
-                  filled:
-                      true, // Specifies that the input field should be filled with color
-                  prefixIcon: const Icon(Icons
-                      .person), // Icon displayed at the beginning of the input field
+                  fillColor: Colors.lightBlue.withOpacity(0.1),
+                  filled: true,
+                  prefixIcon: const Icon(Icons.person),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextField(
                 controller: _passwordController,
-                obscureText:
-                    true, // Indicates that the text entered in the field should be obscured (hidden)
+                obscureText: true,
                 decoration: InputDecoration(
-                  labelText:
-                      'Password', // Label text displayed above the input field
-                  hintText:
-                      'Enter secure password', // Hint text displayed inside the input field
+                  labelText: 'Password',
+                  hintText: 'Enter secure password',
                   border: OutlineInputBorder(
-                    // Defines the border properties
-                    borderRadius: BorderRadius.circular(
-                        18), // Sets the border radius to create rounded corners
-                    borderSide: BorderSide.none, // Hides the border line
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.blue.withOpacity(
-                      0.1), // Sets the fill color of the input field with opacity
-                  filled:
-                      true, // Specifies that the input field should be filled with color
-                  prefixIcon: const Icon(Icons
-                      .password), // Icon displayed at the beginning of the input field
+                  fillColor: Colors.blue.withOpacity(0.1),
+                  filled: true,
+                  prefixIcon: const Icon(Icons.password),
                 ),
               ),
             ),
@@ -155,25 +137,21 @@ class _LoginDemoState extends State<LoginDemo> {
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
-                onPressed: _signInWithEmailAndPassword,
+                onPressed: () {
+                  _signInWithEmailAndPassword(_emailController.text.trim(), _passwordController.text);
+                },
                 child: Text(
-                  'Login', // Text displayed on the button
+                  'Login',
                   style: TextStyle(
-                    // Use TextStyle instead of ButtonStyle
-                    // Define text style properties here
-                    fontSize: 23, // Example font size
-                    fontWeight: FontWeight.bold, // Example font weight
-                    color: Colors.white, // Example text color
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 style: ButtonStyle(
-                  // Apply button style properties here if needed
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      Colors.blueAccent), // Example background color
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                      EdgeInsets.symmetric(vertical: 8)), // Example padding
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                      StadiumBorder()), // Example shape
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(vertical: 8)),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(StadiumBorder()),
                 ),
               ),
             ),
