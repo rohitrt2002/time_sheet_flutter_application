@@ -104,6 +104,7 @@ class EmployeeDataScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Teams'),
+
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('teams').snapshots(),
@@ -119,17 +120,35 @@ class EmployeeDataScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final teamData = teams[index].data() as Map<String, dynamic>;
               final teamName = teamData['teamName'] ?? 'Unnamed Team';
-              return _buildTeamTile(context, teamName);
+              final teamId = teams[index].id;
+              return _buildTeamTile(context, teamName,teamId);
             },
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => AddTeamScreen()),
+
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
-  Widget _buildTeamTile(BuildContext context, String teamName) {
+  Widget _buildTeamTile(BuildContext context, String teamName,String teamId) {
     return ExpansionTile(
       title: Text(teamName),
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          _deleteTeam(teamId);
+        },
+      ),
       children: [
         StreamBuilder<QuerySnapshot>(
           stream: _firestore
@@ -152,8 +171,7 @@ class EmployeeDataScreen extends StatelessWidget {
                       return SizedBox();
                     }
                     final employeeData = snapshot.data!.data() as Map<String, dynamic>;
-                    final employeeName =
-                        '${employeeData['firstName']} ${employeeData['lastName']}';
+                    final employeeName = '${employeeData['firstName']} ${employeeData['lastName']}';
                     return ListTile(
                       title: Text(employeeName),
                     );
@@ -161,9 +179,15 @@ class EmployeeDataScreen extends StatelessWidget {
                 );
               }).toList(),
             );
+
           },
         ),
       ],
+
     );
   }
+void _deleteTeam(String teamId) {
+  _firestore.collection('teams').doc(teamId).delete();
 }
+}
+
