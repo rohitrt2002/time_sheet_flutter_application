@@ -25,18 +25,14 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Project'),
+        title: Text('Select Role:'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Select Role:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
+
             Expanded(
               child: ListView.builder(
                 itemCount: _roles.length,
@@ -180,10 +176,12 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                 },
               ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _assignRoleToEmployees,
-              child: Text('Assign Role'),
+            SizedBox(height: 2),
+            Center(
+              child: ElevatedButton(
+                onPressed: _assignRoleToEmployees,
+                child: Text('Assign Role'),
+              ),
             ),
           ],
         ),

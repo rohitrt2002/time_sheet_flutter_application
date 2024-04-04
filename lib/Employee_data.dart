@@ -89,6 +89,7 @@ class _EmployeeListState extends State<EmployeeList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Employee List'),
+        backgroundColor: Colors.white54   ,
       ),
       body: _buildEmployeeList(),
       floatingActionButton: FloatingActionButton(
@@ -116,25 +117,35 @@ class _EmployeeListState extends State<EmployeeList> {
           final lastName = data['lastName'] as String? ?? '';
           final email = data['email'] as String? ?? '';
 
-          return ListTile(
-            title: Text('$firstName $lastName'),
-            subtitle: Text(email),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    _editEmployee(employee!);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    _deleteEmployee(employee!.id);
-                  },
-                ),
-              ],
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey[300]!, // Border color
+                width: 1, // Border width
+              ),
+              borderRadius: BorderRadius.circular(10), // Border radius
+            ),
+            padding: EdgeInsets.all(10), // Padding inside the container
+            child: ListTile(
+              title: Text(' $firstName $lastName'),
+              subtitle: Text(email),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      _editEmployee(employee!);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      _deleteEmployee(employee!.id);
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         } else {
@@ -243,6 +254,7 @@ class AddEmployeeForm extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text('ADD Employee'),
+          backgroundColor: Colors.blue  ,
         ),
       body:ListView(
         padding: const EdgeInsets.all(8.0),
@@ -251,134 +263,153 @@ class AddEmployeeForm extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            Text(
-              'First Name',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _firstNameController,
               decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.account_box_outlined),
                 hintText: 'Enter First Name',
+                labelText: 'First Name',
               ),
             ), // Add other form fields here
             SizedBox(height: 16),
-            Text(
-              'Last Name',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _lastNameController,
-              decoration: InputDecoration(
-                hintText: 'Enter Last Name',
-              ),
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.account_tree_outlined ),
+                  hintText: 'Enter Last Name',
+                  labelText: 'Last Name',
+                ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Email',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
-                hintText: 'Enter Email',
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.email_outlined ),
+                hintText: 'Enter Emails ID',
+                labelText: 'Email',
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Role Type',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _roleController,
               decoration: InputDecoration(
-                hintText: 'Enter Role type',
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.engineering_outlined),
+                hintText: 'Enter Role Type',
+                labelText: 'Role Type',
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Joining Date',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _joiningDateController,
               decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.date_range_outlined ),
                 hintText: 'Enter Joining Date',
+                labelText: 'Joining Date',
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Unique ID or EMP Code',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _empIdController,
               decoration: InputDecoration(
-                hintText: 'Enter Unique ID or EMP Code',
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.perm_identity  ),
+                hintText: 'Enter EMP ID',
+                labelText: 'Unique ID or EMP Code',
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Mobile Number',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _mobileController,
               decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.phone   ),
                 hintText: 'Enter Mobile Number',
+                labelText: 'Mobile Number',
               ),
             ),
+
             SizedBox(height: 16),
-            Text(
-              'Password',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
             TextFormField(
               controller: _passwordController ,
               decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                border: OutlineInputBorder(borderSide: BorderSide()),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.password_outlined ),
                 hintText: 'Enter Password',
+                labelText: 'Password',
               ),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Access _addEmployee method from the state of AdminPanel
-                addEmployee(
-                  _firstNameController.text,
-                  _lastNameController.text,
-                  _emailController.text,
-                  _roleController.text,
-                  _joiningDateController.text,
-                  _empIdController.text,
-                  _mobileController.text,
-                  _passwordController.text ,
-                );
-              },
-
-              child: Text('Add Employee'),
+            Center(
+              child: Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Access _addEmployee method from the state of AdminPanel
+                    addEmployee(
+                      _firstNameController.text,
+                      _lastNameController.text,
+                      _emailController.text,
+                      _roleController.text,
+                      _joiningDateController.text,
+                      _empIdController.text,
+                      _mobileController.text,
+                      _passwordController.text,
+                    );
+                  },
+                  child: Text(
+                    'Add Employee',
+                    style: TextStyle(fontSize: 20), // Increase font size
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
+                    elevation: 10, // Button's elevation when it's pressed
+                  ),
+                ),
+              ),
             ),
           ],
         ),

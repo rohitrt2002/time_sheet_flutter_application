@@ -23,6 +23,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Project'),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -65,11 +66,13 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
               },
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                _addProject();
-              },
-              child: Text('Add Project'),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  _addProject();
+                },
+                child: Text('Add Project'),
+              ),
             ),
           ],
         ),
@@ -209,9 +212,9 @@ class _ProjectListState extends State<ProjectList> {
             final projectName = data['projectName'] as String? ?? '';
             final allocatedEmployees = _allocatedEmployeesMap[project.id] ?? [];
 
-            return ListTile(
+            return ExpansionTile(
               title: Text(projectName),
-              subtitle: Text('Allocated Employees: ${allocatedEmployees.join(', ')}'),
+              subtitle: Text('Allocated Employees: ${allocatedEmployees.length}'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -229,6 +232,19 @@ class _ProjectListState extends State<ProjectList> {
                   ),
                 ],
               ),
+              children: [
+                // List of allocated employees
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: allocatedEmployees.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(allocatedEmployees[index]),
+                      // Add any additional information here if needed
+                    );
+                  },
+                ),
+              ],
             );
           } else {
             return SizedBox(); // Return an empty widget if data is not valid

@@ -41,7 +41,8 @@ class _AdminPanelState extends State<AdminPanel> {
       Scaffold.of(context).openDrawer();
     },
     child: Scaffold(
-      appBar: AppBar(title: const Text("Admin Page"),
+      appBar: AppBar(title: const Text("Dashboard"),
+        backgroundColor: Colors.lightBlue ,
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app), // Use any icon you prefer for the profile
