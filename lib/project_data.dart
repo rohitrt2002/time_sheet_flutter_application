@@ -212,39 +212,49 @@ class _ProjectListState extends State<ProjectList> {
             final projectName = data['projectName'] as String? ?? '';
             final allocatedEmployees = _allocatedEmployeesMap[project.id] ?? [];
 
-            return ExpansionTile(
-              title: Text(projectName),
-              subtitle: Text('Allocated Employees: ${allocatedEmployees.length}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey[300]!, // Border color
+                  width: 1, // Border width
+                ),
+                borderRadius: BorderRadius.circular(10), // Border radius
+              ),
+              padding: EdgeInsets.all(10),
+              child: ExpansionTile(
+                title: Text(projectName),
+                subtitle: Text('Allocated Employees: ${allocatedEmployees.length}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        _editProject(project.id);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        _deleteProject(project.id);
+                      },
+                    ),
+                  ],
+                ),
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      _editProject(project.id);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      _deleteProject(project.id);
+                  // List of allocated employees
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: allocatedEmployees.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(allocatedEmployees[index]),
+                        // Add any additional information here if needed
+                      );
                     },
                   ),
                 ],
               ),
-              children: [
-                // List of allocated employees
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: allocatedEmployees.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(allocatedEmployees[index]),
-                      // Add any additional information here if needed
-                    );
-                  },
-                ),
-              ],
             );
           } else {
             return SizedBox(); // Return an empty widget if data is not valid

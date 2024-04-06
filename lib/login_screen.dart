@@ -8,38 +8,24 @@ class LoginDemo extends StatefulWidget {
   @override
   _LoginDemoState createState() => _LoginDemoState();
 }
-
 class _LoginDemoState extends State<LoginDemo> {
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _checkLoggedIn();
+    _checkLoggedInAndRedirect();
   }
 
-  Future<void> _checkLoggedIn() async {
+  Future<void> _checkLoggedInAndRedirect() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? email = prefs.getString('email');
     String? password = prefs.getString('password');
     if (email != null && password != null) {
-      _signInWithEmailAndPassword(email, password);
-    }
-  }
-
-  Future<void> _signInWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      if (userCredential.user != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('email', email);
-        prefs.setString('password', password);
-
+      UserCredential? userCredential = await _signInWithEmailAndPassword(email, password);
+      if (userCredential != null) {
         if (isAdmin(email)) {
           Navigator.pushReplacement(
             context,
@@ -54,13 +40,27 @@ class _LoginDemoState extends State<LoginDemo> {
           );
         }
       }
+    }
+  }
+
+  Future<UserCredential?> _signInWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('email', email);
+      prefs.setString('password', password);
+      return userCredential;
     } catch (e) {
       print('Error signing in: $e');
+      return null;
     }
   }
 
   bool isAdmin(String email) {
-    const List<String> adminEmails = ['rohitrthakur72@gmail.com','admin@gmail.com'];
+    const List<String> adminEmails = ['rohitrthakur72@gmail.com', 'admin@gmail.com'];
     return adminEmails.contains(email);
   }
 

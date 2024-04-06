@@ -175,8 +175,10 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   );
                 },
               ),
+
+
             ),
-            SizedBox(height: 2),
+
             Center(
               child: ElevatedButton(
                 onPressed: _assignRoleToEmployees,

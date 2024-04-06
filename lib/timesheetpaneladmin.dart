@@ -7,19 +7,14 @@ class timesheetPanelScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Panel'),
+        title: Text('Project Details:'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Project Details:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
+
+
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('project_details').snapshots(),
@@ -35,31 +30,86 @@ class timesheetPanelScreen extends StatelessWidget {
                   );
                 }
                 final projectData = snapshot.data!.docs;
-                return ListView.builder(
-                  itemCount: projectData.length,
-                  itemBuilder: (context, index) {
-                    final project = projectData[index].data() as Map<String, dynamic>;
-                    final projectName = project['projectName'] ?? 'Unnamed Project';
-                    final firstName = project['firstName'] ?? '';
-                    final lastName = project['lastName'] ?? '';
-                    final payTask = project['payTask'] ?? '';
-                    final withoutPayTask = project['withoutPayTask'] ?? '';
-                    return ListTile(
-                      title: Text(projectName),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Name: $firstName $lastName'),
-                          Text('Pay Task: $payTask'),
-                          Text('Without Pay Task: $withoutPayTask'),
+
+                return SingleChildScrollView( // Wrap with SingleChildScrollView
+                  scrollDirection: Axis.horizontal,
+                  // Allow horizontal scrolling
+                  child: DataTable(
+                    columns: [
+                      DataColumn(label: Text('Project Name')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Pay Task')),
+                      DataColumn(label: Text('Without Pay Task')),
+                    ],
+                    rows: projectData.map((doc) {
+                      final project = doc.data() as Map<String, dynamic>;
+                      final projectName = project['projectName'] ?? 'Unnamed Project';
+                      final firstName = project['firstName'] ?? '';
+                      final lastName = project['lastName'] ?? '';
+                      final payTask = project['payTask'] ?? '';
+                      final withoutPayTask = project['withoutPayTask'] ?? '';
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(projectName)),
+                          DataCell(Text('$firstName $lastName')),
+                          DataCell(
+                            IconButton(
+                              icon: Icon(Icons.remove_red_eye),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Pay Task Details'),
+                                      content: Text(payTask),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Close'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          DataCell(
+                            IconButton(
+                              icon: Icon(Icons.remove_red_eye),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Without Pay Task Details'),
+                                      content: Text(withoutPayTask),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Close'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
                         ],
-                      ),
-                    );
-                  },
+                      );
+                    }).toList(),
+                  ),
                 );
               },
             ),
           ),
+
+
         ],
       ),
     );

@@ -141,49 +141,59 @@ class EmployeeDataScreen extends StatelessWidget {
   }
 
   Widget _buildTeamTile(BuildContext context, String teamName,String teamId) {
-    return ExpansionTile(
-      title: Text(teamName),
-      trailing: IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () {
-          _deleteTeam(teamId);
-        },
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey[300]!, // Border color
+          width: 1, // Border width
+        ),
+        borderRadius: BorderRadius.circular(10), // Border radius
       ),
-      children: [
-        StreamBuilder<QuerySnapshot>(
-          stream: _firestore
-              .collection('teams')
-              .where('teamName', isEqualTo: teamName)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return SizedBox();
-            }
-            final team = snapshot.data!.docs.first;
-            final teamData = team.data() as Map<String, dynamic>;
-            final members = teamData['members'] as List<dynamic>;
-            return Column(
-              children: members.map<Widget>((memberId) {
-                return FutureBuilder<DocumentSnapshot>(
-                  future: _firestore.collection('employees').doc(memberId).get(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return SizedBox();
-                    }
-                    final employeeData = snapshot.data!.data() as Map<String, dynamic>;
-                    final employeeName = '${employeeData['firstName']} ${employeeData['lastName']}';
-                    return ListTile(
-                      title: Text(employeeName),
-                    );
-                  },
-                );
-              }).toList(),
-            );
-
+      padding: EdgeInsets.all(10),
+      child: ExpansionTile(
+        title: Text(teamName),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () {
+            _deleteTeam(teamId);
           },
         ),
-      ],
+        children: [
+          StreamBuilder<QuerySnapshot>(
+            stream: _firestore
+                .collection('teams')
+                .where('teamName', isEqualTo: teamName)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return SizedBox();
+              }
+              final team = snapshot.data!.docs.first;
+              final teamData = team.data() as Map<String, dynamic>;
+              final members = teamData['members'] as List<dynamic>;
+              return Column(
+                children: members.map<Widget>((memberId) {
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: _firestore.collection('employees').doc(memberId).get(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return SizedBox();
+                      }
+                      final employeeData = snapshot.data!.data() as Map<String, dynamic>;
+                      final employeeName = '${employeeData['firstName']} ${employeeData['lastName']}';
+                      return ListTile(
+                        title: Text(employeeName),
+                      );
+                    },
+                  );
+                }).toList(),
+              );
 
+            },
+          ),
+        ],
+
+      ),
     );
   }
 void _deleteTeam(String teamId) {
