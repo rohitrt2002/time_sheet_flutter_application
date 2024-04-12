@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_sheet_flutter_application/User_panel.dart';
 import 'package:time_sheet_flutter_application/admin_panel.dart';
@@ -10,9 +12,10 @@ class LoginDemo extends StatefulWidget {
 }
 
 class _LoginDemoState extends State<LoginDemo> {
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+  bool _obscureText = true;
 
   @override
   void initState() {
@@ -29,10 +32,14 @@ class _LoginDemoState extends State<LoginDemo> {
     }
   }
 
-  Future<void> _signInWithEmailAndPassword(String email, String password) async {
+  Future<void> _signInWithEmailAndPassword(
+      String email, String password) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -57,11 +64,34 @@ class _LoginDemoState extends State<LoginDemo> {
       }
     } catch (e) {
       print('Error signing in: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      // Show error message to the user
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Login Error'),
+          content: Text(
+              'Invalid credentials. Please check your email and password.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   bool isAdmin(String email) {
-    const List<String> adminEmails = ['rohitrthakur72@gmail.com','admin@gmail.com'];
+    const List<String> adminEmails = [
+      'rohitrthakur72@gmail.com',
+      'admin@gmail.com'
+    ];
     return adminEmails.contains(email);
   }
 
@@ -75,90 +105,159 @@ class _LoginDemoState extends State<LoginDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white54,
-      appBar: AppBar(
-        title: Text("Login Page"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 60.0),
-              child: Center(
-                child: Container(
-                  width: 200,
-                  height: 150,
-                  child: Image.asset(
-                    'assets/image/icons8-flutter-192(-xxxhdpi).png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 70),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter valid email id as abc@gmail.com',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide.none,
-                  ),
-                  fillColor: Colors.lightBlue.withOpacity(0.1),
-                  filled: true,
-                  prefixIcon: const Icon(Icons.person),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter secure password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide.none,
-                  ),
-                  fillColor: Colors.blue.withOpacity(0.1),
-                  filled: true,
-                  prefixIcon: const Icon(Icons.password),
-                ),
-              ),
-            ),
-            SizedBox(height: 80),
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-              child: TextButton(
-                onPressed: () {
-                  _signInWithEmailAndPassword(_emailController.text.trim(), _passwordController.text);
-                },
-                child: Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 23,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(vertical: 8)),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(StadiumBorder()),
-                ),
-              ),
-            ),
-          ],
+        backgroundColor: Colors.white54,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text("Login Page"),
         ),
-      ),
-    );
+        body: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.orange[800] ?? Colors.orange,
+                  Colors.orange[700] ?? Colors.orange,
+                  Colors.orange[400] ?? Colors.orange,
+                ],
+              ),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Center(
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      child: Image.asset(
+                        'assets/image/icons8-flutter-192(-xxxhdpi).png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 600,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(60),
+                        topRight: Radius.circular(60)),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: TextField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              hintText: 'Enter valid email id as abc@gmail.com',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none,
+                              ),
+                              fillColor: Colors.orangeAccent.withOpacity(0.1),
+                              filled: true,
+                              prefixIcon: const Icon(Icons.person),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20), // Adjust the spacing as needed
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: TextField(
+                            controller: _passwordController,
+                            obscureText: _obscureText,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              hintText: 'Enter secure password',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none,
+                              ),
+                              fillColor: Colors.orangeAccent.withOpacity(0.1),
+                              filled: true,
+                              prefixIcon: const Icon(Icons.password),
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 90), // Adjust the spacing as needed
+                        _isLoading
+                            ? CircularProgressIndicator()
+                            : Container(
+                                height: 50,
+                                width: 250,
+                                decoration: BoxDecoration(
+                                  color: Colors.orange,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: TextButton(
+                                  onPressed: () {
+                                    if (_emailController.text.trim().isEmpty ||
+                                        _passwordController.text.isEmpty) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          content: Text(
+                                              'Please enter both email and password.'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text('OK'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    } else {
+                                      _signInWithEmailAndPassword(
+                                          _emailController.text.trim(),
+                                          _passwordController.text);
+                                    }
+                                  },
+                                  child: Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 23,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.orangeAccent),
+                                    padding: MaterialStateProperty.all<
+                                            EdgeInsetsGeometry>(
+                                        EdgeInsets.symmetric(vertical: 8)),
+                                    shape: MaterialStateProperty.all<
+                                        OutlinedBorder>(StadiumBorder()),
+                                  ),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }

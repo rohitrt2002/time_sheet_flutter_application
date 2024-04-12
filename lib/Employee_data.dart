@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class EmployeeList extends StatefulWidget {
   @override
@@ -69,13 +70,15 @@ class _EmployeeListState extends State<EmployeeList> {
         'joiningDate': joiningDate,
         'empId': empId,
         'mobile': mobile,
-        'Password':password ,
+        'Password': password,
         // Add more fields as needed
       });
-      // Show success message or navigate to another page
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Employee added successfully')),
       );
+      // Fetch updated employee list
+      _fetchEmployees();
     } catch (e) {
       print('Error adding employee: $e');
       // Handle error
@@ -236,186 +239,302 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
   }
 }
 
-class AddEmployeeForm extends StatelessWidget {
+class AddEmployeeForm extends StatefulWidget {
   final Function(String, String, String, String, String, String, String, String) addEmployee;
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _roleController = TextEditingController();
-  final TextEditingController _joiningDateController = TextEditingController();
-  final TextEditingController _empIdController = TextEditingController();
-  final TextEditingController _mobileController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   AddEmployeeForm({required this.addEmployee});
 
+  @override
+  _AddEmployeeFormState createState() => _AddEmployeeFormState();
+}
+
+class _AddEmployeeFormState extends State<AddEmployeeForm> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  String? _selectedRole;
+  final TextEditingController _empIdController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  DateTime? _selectedDate;
+  bool _isPasswordVisible = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('ADD Employee'),
-          backgroundColor: Colors.blue  ,
+          backgroundColor: Colors.blue,
         ),
-      body:ListView(
-        padding: const EdgeInsets.all(8.0),
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        body: Form (
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(8.0),
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
 
-            TextFormField(
-              controller: _firstNameController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.account_box_outlined),
-                hintText: 'Enter First Name',
-                labelText: 'First Name',
-              ),
-            ), // Add other form fields here
-            SizedBox(height: 16),
-
-            TextFormField(
-              controller: _lastNameController,
+              TextFormField(
+                controller: _firstNameController,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                       borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
                   border: OutlineInputBorder(borderSide: BorderSide()),
                   fillColor: Colors.white,
                   filled: true,
-                  prefixIcon: Icon(Icons.account_tree_outlined ),
-                  hintText: 'Enter Last Name',
-                  labelText: 'Last Name',
+                  prefixIcon: Icon(Icons.account_box_outlined),
+                  hintText: 'Enter First Name',
+                  labelText: 'First Name',
+                ),validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter First Name';
+                }
+                return null;
+              },
+              ),
+                  // Add other form fields here
+              SizedBox(height: 16),
+
+              TextFormField(
+                controller: _lastNameController,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                    border: OutlineInputBorder(borderSide: BorderSide()),
+                    fillColor: Colors.white,
+                    filled: true,
+                    prefixIcon: Icon(Icons.account_tree_outlined ),
+                    hintText: 'Enter Last Name',
+                    labelText: 'Last Name',
+                  ),validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter Last Name';
+                }
+                return null;
+              },
+              ),
+              SizedBox(height: 16),
+
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.email_outlined ),
+                  hintText: 'Enter Emails ID',
+                  labelText: 'Email',
                 ),
-            ),
-            SizedBox(height: 16),
-
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.email_outlined ),
-                hintText: 'Enter Emails ID',
-                labelText: 'Email',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter Email';
+                  }
+                  return null;
+                },
               ),
-            ),
-            SizedBox(height: 16),
+              SizedBox(height: 16),
 
-            TextFormField(
-              controller: _roleController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.engineering_outlined),
-                hintText: 'Enter Role Type',
-                labelText: 'Role Type',
-              ),
-            ),
-            SizedBox(height: 16),
-
-            TextFormField(
-              controller: _joiningDateController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.date_range_outlined ),
-                hintText: 'Enter Joining Date',
-                labelText: 'Joining Date',
-              ),
-            ),
-            SizedBox(height: 16),
-
-            TextFormField(
-              controller: _empIdController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.perm_identity  ),
-                hintText: 'Enter EMP ID',
-                labelText: 'Unique ID or EMP Code',
-              ),
-            ),
-            SizedBox(height: 16),
-
-            TextFormField(
-              controller: _mobileController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.phone   ),
-                hintText: 'Enter Mobile Number',
-                labelText: 'Mobile Number',
-              ),
-            ),
-
-            SizedBox(height: 16),
-
-            TextFormField(
-              controller: _passwordController ,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
-                border: OutlineInputBorder(borderSide: BorderSide()),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.password_outlined ),
-                hintText: 'Enter Password',
-                labelText: 'Password',
-              ),
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Access _addEmployee method from the state of AdminPanel
-                    addEmployee(
-                      _firstNameController.text,
-                      _lastNameController.text,
-                      _emailController.text,
-                      _roleController.text,
-                      _joiningDateController.text,
-                      _empIdController.text,
-                      _mobileController.text,
-                      _passwordController.text,
-                    );
-                  },
-                  child: Text(
-                    'Add Employee',
-                    style: TextStyle(fontSize: 20), // Increase font size
+                  DropdownButtonFormField<String>(
+                    value: _selectedRole,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedRole = newValue;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                      ),
+                      border: OutlineInputBorder(borderSide: BorderSide()),
+                      filled: true,
+                      fillColor: Colors.white,
+                      prefixIcon: Icon(Icons.engineering_outlined),
+                      hintText: 'Select Role Type',
+                      labelText: 'Role Type',
+                    ),
+                    items: <String>['PM', 'QA', 'DEV', 'BA', 'Designer', 'Tech Lead'].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select role';
+                      }
+                      return null;
+                    },
                   ),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
-                    elevation: 10, // Button's elevation when it's pressed
+              SizedBox(height: 16),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.blueGrey, // Adjust border color as needed
+                        width: 2.0, // Adjust border width as needed
+                      ),
+                      borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        _selectDate(context); // Call a method to show date picker
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today , color: Colors.black54    ),
+                          SizedBox(width: 10),
+                          Text(
+                            _selectedDate == null
+                                ? 'Select Joining Date'
+                                : DateFormat('yyyy-MM-dd').format(_selectedDate!),
+                            style: TextStyle(
+                              color: Colors.black54 , // Adjust text color as needed
+                              fontSize: 16, // Adjust font size as needed
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              SizedBox(height: 16),
+
+              TextFormField(
+                controller: _empIdController,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.perm_identity  ),
+                  hintText: 'Enter EMP ID',
+                  labelText: 'Unique ID or EMP Code',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter Email';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+
+              TextFormField(
+                controller: _mobileController,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderSide:BorderSide(color: Colors.blueGrey, width: 2.0)),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.phone   ),
+                  hintText: 'Enter Mobile Number',
+                  labelText: 'Mobile Number',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter Mobile Number';
+                  }
+                  return null;
+                },
+              ),
+
+              SizedBox(height: 16),
+
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                      ),
+                      border: OutlineInputBorder(borderSide: BorderSide()),
+                      fillColor: Colors.white,
+                      filled: true,
+                      prefixIcon: Icon(Icons.password_outlined),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                        child: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: _isPasswordVisible ? Colors.blue : Colors.grey,
+                        ),
+                      ),
+                      hintText: 'Enter Password',
+                      labelText: 'Password',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      return null;
+                    },
+                  ),
+              SizedBox(height: 16),
+              Center(
+                child: Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _submitForm();
+                      }
+                    },
+                    child: Text(
+                      'Add Employee',
+                      style: TextStyle(fontSize: 20), // Increase font size
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
+                      elevation: 10, // Button's elevation when it's pressed
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],)
+            ],
+          ),
+                ],),
+        )
     );
   }
+  void _submitForm() {
+    // Access _addEmployee method from the state of AddEmployeeForm
+    widget.addEmployee(
+      _firstNameController.text,
+      _lastNameController.text,
+      _emailController.text,
+      _selectedRole ?? '',
+      _selectedDate != null ? DateFormat('yyyy-MM-dd').format(_selectedDate!) : '',
+      _empIdController.text,
+      _mobileController.text,
+      _passwordController.text,
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+    // Add validation logic here
+    if (_selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please select a date'),
+      ));
+    }}
 }
 
 
