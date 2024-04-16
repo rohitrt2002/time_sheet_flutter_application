@@ -117,9 +117,9 @@ class _LoginDemoState extends State<LoginDemo> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.orange[800] ?? Colors.orange,
-                Colors.orange[700] ?? Colors.orange,
-                Colors.orange[400] ?? Colors.orange,
+                Colors.blueGrey[800] ?? Colors.blueGrey,
+                Colors.blueGrey[700] ?? Colors.blueGrey,
+                Colors.blueGrey[400] ?? Colors.blueGrey,
               ],
             ),
           ),
@@ -164,7 +164,7 @@ class _LoginDemoState extends State<LoginDemo> {
                               borderRadius: BorderRadius.circular(18),
                               borderSide: BorderSide.none,
                             ),
-                            fillColor: Colors.orangeAccent.withOpacity(0.1),
+                            fillColor: Colors.blueGrey.withOpacity(0.1),
                             filled: true,
                             prefixIcon: const Icon(Icons.person),
                           ),
@@ -183,7 +183,7 @@ class _LoginDemoState extends State<LoginDemo> {
                               borderRadius: BorderRadius.circular(18),
                               borderSide: BorderSide.none,
                             ),
-                            fillColor: Colors.orangeAccent.withOpacity(0.1),
+                            fillColor: Colors.blueGrey.withOpacity(0.1),
                             filled: true,
                             prefixIcon: const Icon(Icons.password),
                             suffixIcon: IconButton(
@@ -205,7 +205,7 @@ class _LoginDemoState extends State<LoginDemo> {
                         height: 50,
                         width: 250,
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: TextButton(
@@ -244,7 +244,7 @@ class _LoginDemoState extends State<LoginDemo> {
                           style: ButtonStyle(
                             backgroundColor:
                             MaterialStateProperty.all<Color>(
-                                Colors.orangeAccent),
+                                Colors.blueGrey),
                             padding: MaterialStateProperty.all<
                                 EdgeInsetsGeometry>(
                                 EdgeInsets.symmetric(vertical: 8)),

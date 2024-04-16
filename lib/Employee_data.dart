@@ -93,7 +93,7 @@ class _EmployeeListState extends State<EmployeeList> {
       appBar: AppBar(
         title: Text('Employee List'),
         backgroundColor: Colors.white54   ,
-      ),
+      ),backgroundColor: Colors.grey ,
       body: _buildEmployeeList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -123,11 +123,13 @@ class _EmployeeListState extends State<EmployeeList> {
           return Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: Colors.grey[300]!, // Border color
+                color: Colors.white  , // Border color
                 width: 1, // Border width
               ),
+              color: Colors.blueGrey  ,
               borderRadius: BorderRadius.circular(10), // Border radius
             ),
+
             padding: EdgeInsets.all(10), // Padding inside the container
             child: ListTile(
               title: Text(' $firstName $lastName'),

@@ -202,7 +202,8 @@ class _ProjectListState extends State<ProjectList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Project List'),
-      ),
+        backgroundColor: Colors.grey,
+      ),backgroundColor: Colors.grey,
       body: ListView.builder(
         itemCount: _projects.length,
         itemBuilder: (context, index) {
@@ -215,9 +216,10 @@ class _ProjectListState extends State<ProjectList> {
             return Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.grey[300]!, // Border color
+                  color: Colors.white, // Border color
                   width: 1, // Border width
                 ),
+                color: Colors.blueGrey,
                 borderRadius: BorderRadius.circular(10), // Border radius
               ),
               padding: EdgeInsets.all(10),

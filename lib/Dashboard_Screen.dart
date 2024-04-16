@@ -4,6 +4,11 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
+import 'package:time_sheet_flutter_application/Employee_data.dart';
+import 'package:time_sheet_flutter_application/add_role.dart';
+import 'package:time_sheet_flutter_application/project_data.dart';
+import 'package:time_sheet_flutter_application/team.dart';
+import 'package:time_sheet_flutter_application/timesheetpaneladmin.dart';
 
 class DashboardScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,7 +18,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.blueGrey,
       ),backgroundColor: Colors.grey,
       body: Container(
         color: Colors.grey,
@@ -116,23 +121,38 @@ class DashboardScreen extends StatelessWidget {
                       children: [
                         _buildGridItem(Icons.person, 'Employees',
                             data['employeeCount'] ?? 0, Colors.blue, () {
-                              // Navigate to Employees screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EmployeeList()), // Navigate to EmployeeList screen
+                              );
                             }),
                         _buildGridItem(Icons.assignment, 'Projects',
                             data['projectCount'] ?? 0, Colors.green, () {
-                              // Navigate to Projects screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ProjectList()), // Navigate to EmployeeList screen
+                              );
                             }),
                         _buildGridItem(
                             Icons.work, 'Roles', null, Colors.orange, () {
-                          // Navigate to Roles screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AddRoleScreen()), // Navigate to EmployeeList screen
+                          );
                         }),
                         _buildGridItem(
                             Icons.group, 'Teams', null, Colors.red, () {
-                          // Navigate to Teams screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AddTeamScreen()), // Navigate to EmployeeList screen
+                          );
                         }),
                         _buildGridItem(
                             Icons.timelapse, 'Timesheets', null, Colors.purple, () {
-                          // Navigate to Timesheets screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => timesheetPanelScreen()), // Navigate to EmployeeList screen
+                          );
                         }),
                       ],
                     );

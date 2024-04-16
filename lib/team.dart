@@ -16,7 +16,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Team'),
-      ),
+      ),backgroundColor: Colors.grey,
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -104,8 +104,8 @@ class EmployeeDataScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Teams'),
-
-      ),
+        backgroundColor: Colors.grey,
+      ),backgroundColor: Colors.grey,
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('teams').snapshots(),
         builder: (context, teamSnapshot) {
@@ -144,9 +144,10 @@ class EmployeeDataScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.grey[300]!, // Border color
+          color: Colors.white, // Border color
           width: 1, // Border width
         ),
+        color: Colors.blueGrey,
         borderRadius: BorderRadius.circular(10), // Border radius
       ),
       padding: EdgeInsets.all(10),

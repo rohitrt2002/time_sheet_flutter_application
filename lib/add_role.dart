@@ -26,60 +26,82 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Select Role:'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          backgroundColor: Colors.white54,
+      ),backgroundColor: Colors.grey,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
 
-            Expanded(
-              child: ListView.builder(
-                itemCount: _roles.length,
-                itemBuilder: (context, index) {
-                  final role = _roles[index];
-                  return ListTile(
-                    title: Text(role),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _selectedRole = role;
-                            });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => AddEmployeeScreen(selectedRole: role)),
-                            );
-                          },
-                          icon: Icon(Icons.person_add),
-                          label: Text(''),
-                        ),
-                        SizedBox(width: 8),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _selectedRole = role;
-                            });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ViewEmployeeScreen(selectedRole: role)),
-                            );
-                          },
-                          icon: Icon(Icons.visibility),
-                          label: Text(''),
-                        ),
-                      ],
+          Expanded(
+            child: ListView.builder(
+              itemCount: _roles.length,
+              itemBuilder: (context, index) {
+                final role = _roles[index];
+                return Container(
+
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white, // Border color
+                      width: 1, // Border width
                     ),
-                  );
-                },
-              ),
+                    borderRadius: BorderRadius.circular(10), // Border radius
+                    color: Colors.blueGrey ,
+
+                  ),
+                  padding: EdgeInsets.all(10),
+                  child: Padding(
+
+                    padding: const EdgeInsets.all(8), // Adjust the padding as needed
+                    child: ListTile(
+                      title: Text(role),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _selectedRole = role;
+                              });
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AddEmployeeScreen(selectedRole: role)),
+                              );
+                            },
+                            icon: Icon(Icons.person_add, color: Colors.white),
+                            label: Text(''),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue, // Set the background color to blue
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _selectedRole = role;
+                              });
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ViewEmployeeScreen(selectedRole: role)),
+                              );
+                            },
+                            icon: Icon(Icons.visibility, color: Colors.white),
+                            label: Text(''),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue, // Set the background color to blue
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+
+              },
             ),
+          ),
 
-            ],
+          ],
 
-        ),
       ),
     );
   }
