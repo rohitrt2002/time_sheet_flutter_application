@@ -14,10 +14,12 @@ class _EmployeeListState extends State<EmployeeList> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<DocumentSnapshot>? _employees; // Make the list nullable
 
+
   @override
   void initState() {
     super.initState();
     _fetchEmployees();
+
   }
 
   void _fetchEmployees() async {
@@ -261,6 +263,18 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
   DateTime? _selectedDate;
   bool _isPasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late Future<List<String>> _fetchRolesFuture;
+  @override
+  void initState() {
+    super.initState();
+    _fetchRolesFuture = _fetchRoles();
+  }
+  Future<List<String>> _fetchRoles() async {
+    final firestoreService = FirestoreService();
+    // Use the first value emitted by the stream
+    final rolesSnapshot = await firestoreService.getRoles().first;
+    return rolesSnapshot;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -340,37 +354,50 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
               ),
               SizedBox(height: 16),
 
-                  DropdownButtonFormField<String>(
-                    value: _selectedRole,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedRole = newValue;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
-                      ),
-                      border: OutlineInputBorder(borderSide: BorderSide()),
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.engineering_outlined),
-                      hintText: 'Select Role Type',
-                      labelText: 'Role Type',
-                    ),
-                    items: <String>['PM', 'QA', 'DEV', 'BA', 'Designer', 'Tech Lead'].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select role';
+                  FutureBuilder<List<String>>(
+                    future: _fetchRolesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Show loading indicator while fetching roles
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        final roles = snapshot.data!;
+                        return DropdownButtonFormField<String>(
+                          value: _selectedRole,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedRole = newValue;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                            ),
+                            border: OutlineInputBorder(borderSide: BorderSide()),
+                            filled: true,
+                            fillColor: Colors.white,
+                            prefixIcon: Icon(Icons.engineering_outlined),
+                            hintText: 'Select Role Type',
+                            labelText: 'Role Type',
+                          ),
+                          items: roles.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select role';
+                            }
+                            return null;
+                          },
+                        );
                       }
-                      return null;
                     },
                   ),
+
               SizedBox(height: 16),
 
                   Container(
@@ -519,6 +546,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
     );
   }
 
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -538,5 +566,21 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
       ));
     }}
 }
+class FirestoreService {
+  final CollectionReference rolesCollection =
+  FirebaseFirestore.instance.collection('roles');
 
+  Future<void> addRole(String roleName) async {
+    try {
+      await rolesCollection.add({'name': roleName});
+    } catch (e) {
+      print('Error adding role: $e');
+    }
+  }
 
+  Stream<List<String>> getRoles() {
+    return rolesCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
+}

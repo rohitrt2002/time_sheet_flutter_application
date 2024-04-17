@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:time_sheet_flutter_application/Dashboard_Screen.dart';
 
 class AddRoleScreen extends StatefulWidget {
   @override
@@ -7,18 +8,24 @@ class AddRoleScreen extends StatefulWidget {
 }
 
 class _AddRoleScreenState extends State<AddRoleScreen> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late TextEditingController _projectNameController;
-
+  List<String> _roles = []; // List to store roles
   String? _selectedRole;
-
-  // Define list of roles
-  List<String> _roles = ['PM', 'QA', 'DEV', 'BA', 'Designer', 'Tech Lead'];
+  final FirestoreService _firestoreService = FirestoreService(); // Initialize FirestoreService
 
   @override
   void initState() {
     super.initState();
-    _projectNameController = TextEditingController();
+    // Fetch roles from Firestore and update the _roles list
+    _fetchRoles();
+  }
+
+  // Function to fetch roles from Firestore
+  void _fetchRoles() {
+    _firestoreService.getRoles().listen((roles) {
+      setState(() {
+        _roles = roles;
+      });
+    });
   }
 
   @override
@@ -26,32 +33,29 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Select Role:'),
-          backgroundColor: Colors.white54,
-      ),backgroundColor: Colors.grey,
+        backgroundColor: Colors.white54,
+      ),
+      backgroundColor: Colors.grey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Expanded(
             child: ListView.builder(
               itemCount: _roles.length,
               itemBuilder: (context, index) {
                 final role = _roles[index];
                 return Container(
-
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.white, // Border color
                       width: 1, // Border width
                     ),
                     borderRadius: BorderRadius.circular(10), // Border radius
-                    color: Colors.blueGrey ,
-
+                    color: Colors.blueGrey,
                   ),
                   padding: EdgeInsets.all(10),
                   child: Padding(
-
-                    padding: const EdgeInsets.all(8), // Adjust the padding as needed
+                    padding: const EdgeInsets.all(8),
                     child: ListTile(
                       title: Text(role),
                       trailing: Row(
@@ -64,13 +68,15 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
                               });
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => AddEmployeeScreen(selectedRole: role)),
-                              );
+                                MaterialPageRoute(
+                                  builder: (context) => AddEmployeeScreen(selectedRole: role),
+                                ),
+                              );// Add your logic here for adding employees to this role
                             },
                             icon: Icon(Icons.person_add, color: Colors.white),
                             label: Text(''),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue, // Set the background color to blue
+                              backgroundColor: Colors.blue,
                             ),
                           ),
                           SizedBox(width: 8),
@@ -81,13 +87,15 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
                               });
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ViewEmployeeScreen(selectedRole: role)),
-                              );
+                                MaterialPageRoute(
+                                  builder: (context) => ViewEmployeeScreen(selectedRole: role),
+                                ),
+                              );// Add your logic here for viewing employees of this role
                             },
                             icon: Icon(Icons.visibility, color: Colors.white),
                             label: Text(''),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue, // Set the background color to blue
+                              backgroundColor: Colors.blue,
                             ),
                           ),
                         ],
@@ -95,25 +103,36 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
                     ),
                   ),
                 );
-
               },
             ),
           ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // Navigate to the screen where you can add a new role
+          final newRole = await Navigator.of(context).push<String>(
+            MaterialPageRoute(builder: (context) => AddNewRoleScreen()),
+          );
 
-          ],
-
+          if (newRole != null && newRole.isNotEmpty) {
+            // Add the new role to the list
+            setState(() {
+              _roles.add(newRole);
+            });
+          }
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
-
-
-
-  @override
+}
+  /*@override
   void dispose() {
     _projectNameController.dispose();
     super.dispose();
   }
-}
+}*/
 
 
 
@@ -317,3 +336,73 @@ class _ViewEmployeeScreenState extends State<ViewEmployeeScreen> {
   }
 }
 
+class AddNewRoleScreen extends StatefulWidget {
+  @override
+  _AddNewRoleScreenState createState() => _AddNewRoleScreenState();
+}
+
+class _AddNewRoleScreenState extends State<AddNewRoleScreen> {
+  TextEditingController _roleController = TextEditingController();
+
+  final FirestoreService _firestoreService = FirestoreService();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add New Role'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _roleController,
+              decoration: InputDecoration(
+                labelText: 'Role Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  String newRole = _roleController.text.trim();
+                  if (newRole.isNotEmpty) {
+                    await _firestoreService.addRole(newRole);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('New role added successfully'),
+                      ),
+                    );
+                  }
+                },
+                child: Text('Add Role'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FirestoreService {
+  final CollectionReference rolesCollection =
+  FirebaseFirestore.instance.collection('roles');
+
+  Future<void> addRole(String roleName) async {
+    try {
+      await rolesCollection.add({'name': roleName});
+    } catch (e) {
+      print('Error adding role: $e');
+    }
+  }
+
+  Stream<List<String>> getRoles() {
+    return rolesCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
+}
