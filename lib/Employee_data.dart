@@ -57,7 +57,7 @@ class _EmployeeListState extends State<EmployeeList> {
     );
   }
 
-  void _addEmployee(String firstName, String lastName, String email, String role, String joiningDate, String empId, String mobile, String password) async {
+  void _addEmployee(String firstName, String lastName, String email, String role, String team, String joiningDate, String empId, String mobile, String password) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -69,6 +69,7 @@ class _EmployeeListState extends State<EmployeeList> {
         'lastName': lastName,
         'email': email,
         'role': role,
+        'team': team,
         'joiningDate': joiningDate,
         'empId': empId,
         'mobile': mobile,
@@ -244,7 +245,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
 }
 
 class AddEmployeeForm extends StatefulWidget {
-  final Function(String, String, String, String, String, String, String, String) addEmployee;
+  final Function(String, String, String, String, String, String, String, String, String) addEmployee;
 
   AddEmployeeForm({required this.addEmployee});
 
@@ -257,6 +258,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   String? _selectedRole;
+  String? _selectedTeam;
   final TextEditingController _empIdController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -264,16 +266,25 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
   bool _isPasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late Future<List<String>> _fetchRolesFuture;
+  late Future<List<String>> _fetchTeamsFuture;
+
   @override
   void initState() {
     super.initState();
     _fetchRolesFuture = _fetchRoles();
+    _fetchTeamsFuture = _fetchTeams(); // Initialize _fetchTeamsFuture here
   }
+
   Future<List<String>> _fetchRoles() async {
     final firestoreService = FirestoreService();
-    // Use the first value emitted by the stream
     final rolesSnapshot = await firestoreService.getRoles().first;
     return rolesSnapshot;
+  }
+
+  Future<List<String>> _fetchTeams() async {
+    final firestoreService = FirestoreService();
+    final teamsSnapshot = await firestoreService.getTeams().first; // Fix typo here
+    return teamsSnapshot;
   }
   @override
   Widget build(BuildContext context) {
@@ -399,7 +410,50 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                   ),
 
               SizedBox(height: 16),
-
+                  FutureBuilder<List<String>>(
+                    future: _fetchTeamsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Show loading indicator while fetching roles
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        final roles = snapshot.data!;
+                        return DropdownButtonFormField<String>(
+                          value: _selectedTeam,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedTeam = newValue;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                            ),
+                            border: OutlineInputBorder(borderSide: BorderSide()),
+                            filled: true,
+                            fillColor: Colors.white,
+                            prefixIcon: Icon(Icons.group),
+                            hintText: 'Select Team Type',
+                            labelText: 'Team Type',
+                          ),
+                          items: roles.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select team';
+                            }
+                            return null;
+                          },
+                        );
+                      }
+                    },
+                  ),
+                  SizedBox(height: 16),
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -539,6 +593,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
       _lastNameController.text,
       _emailController.text,
       _selectedRole ?? '',
+      _selectedTeam ?? '',
       _selectedDate != null ? DateFormat('yyyy-MM-dd').format(_selectedDate!) : '',
       _empIdController.text,
       _mobileController.text,
@@ -569,6 +624,8 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
 class FirestoreService {
   final CollectionReference rolesCollection =
   FirebaseFirestore.instance.collection('roles');
+  final CollectionReference teamsCollection =
+  FirebaseFirestore.instance.collection('teams');
 
   Future<void> addRole(String roleName) async {
     try {
@@ -577,9 +634,21 @@ class FirestoreService {
       print('Error adding role: $e');
     }
   }
+  Future<void> addTeam(String teamName) async {
+    try {
+      await teamsCollection.add({'name': teamName});
+    } catch (e) {
+      print('Error adding team: $e');
+    }
+  }
 
   Stream<List<String>> getRoles() {
     return rolesCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
+  Stream<List<String>> getTeams() {
+    return teamsCollection.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) => doc['name'] as String).toList();
     });
   }

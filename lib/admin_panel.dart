@@ -33,10 +33,10 @@ class _AdminPanelState extends State<AdminPanel> {
       EmployeeList(),
       ProjectList(),
       AddRoleScreen(),
-      EmployeeDataScreen(),
+      AddTeamScreen(),
       timesheetPanelScreen(),
 
-      AddTeamScreen(),
+
     ];
     return GestureDetector(
         onTap: () {

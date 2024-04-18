@@ -105,11 +105,11 @@ class _LoginDemoState extends State<LoginDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white54,
+
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text("Login Page"),
-      ),
+      ), backgroundColor: Colors.white ,
       body: SingleChildScrollView(
         child: Container(
           decoration: BoxDecoration(
@@ -139,8 +139,8 @@ class _LoginDemoState extends State<LoginDemo> {
                 ),
               ),
               Container(
-                height: 590,
 
+                        height: 560,
                 decoration: BoxDecoration(
 
                   color: Colors.white,
