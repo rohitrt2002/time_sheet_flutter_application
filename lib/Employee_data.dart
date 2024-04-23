@@ -58,6 +58,13 @@ class _EmployeeListState extends State<EmployeeList> {
   }
 
   void _addEmployee(String firstName, String lastName, String email, String role, String team, String joiningDate, String empId, String mobile, String password) async {
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password must be at least 6 characters long')),
+      );
+      return; // Return early if password is too short
+    }
+
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -80,16 +87,26 @@ class _EmployeeListState extends State<EmployeeList> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Employee added successfully')),
       );
+      Navigator.pop(context);
       // Fetch updated employee list
       _fetchEmployees();
     } catch (e) {
       print('Error adding employee: $e');
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add employee')),
-      );
+      if (e is FirebaseAuthException && e.code == 'email-already-in-use') {
+        // Handle the case where the email is already in use
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email is already in use. Please use a different email address.')),
+        );
+      } else {
+        // Handle other errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add employee')),
+        );
+      }
     }
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

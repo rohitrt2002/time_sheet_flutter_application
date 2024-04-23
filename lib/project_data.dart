@@ -86,10 +86,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         'projectName': _projectNameController.text,
         'allocatedEmployees': _selectedEmployees,
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project added successfully')),
       );
-      // Navigate to a different screen here
+      Navigator.pop(context);
 
     } catch (e) {
       print('Error adding project: $e');
@@ -141,6 +142,7 @@ class _ProjectListState extends State<ProjectList> {
 
   Future<void> _fetchAllocatedEmployees() async {
     try {
+
       for (DocumentSnapshot project in _projects) {
         List<String> allocatedEmployeeIds = ((project.data() as Map<String, dynamic>?)?['allocatedEmployees'] as List<dynamic>?)?.map((e) => e.toString())?.toList() ?? [];
         List<String> employeeNames = [];
