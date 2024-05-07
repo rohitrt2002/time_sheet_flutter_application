@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddProjectScreen extends StatefulWidget {
+  final VoidCallback onProjectAdded; // Define the onProjectAdded callback
+
+  AddProjectScreen({required this.onProjectAdded});
+
   @override
   _AddProjectScreenState createState() => _AddProjectScreenState();
 }
@@ -90,8 +94,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project added successfully')),
       );
-      Navigator.pop(context);
 
+      // Call the callback function to refresh the project list
+      widget.onProjectAdded();
+
+      Navigator.pop(context);
     } catch (e) {
       print('Error adding project: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,8 +114,6 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   }
 }
 
-
-
 class ProjectList extends StatefulWidget {
   @override
   _ProjectListState createState() => _ProjectListState();
@@ -118,6 +123,7 @@ class _ProjectListState extends State<ProjectList> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<DocumentSnapshot> _projects = [];
   Map<String, List<String>> _allocatedEmployeesMap = {};
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -130,6 +136,7 @@ class _ProjectListState extends State<ProjectList> {
       QuerySnapshot querySnapshot = await _firestore.collection('projects').get();
       setState(() {
         _projects = querySnapshot.docs;
+        _isLoading = false;
       });
       await _fetchAllocatedEmployees();
     } catch (e) {
@@ -137,12 +144,14 @@ class _ProjectListState extends State<ProjectList> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to fetch projects')),
       );
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   Future<void> _fetchAllocatedEmployees() async {
     try {
-
       for (DocumentSnapshot project in _projects) {
         List<String> allocatedEmployeeIds = ((project.data() as Map<String, dynamic>?)?['allocatedEmployees'] as List<dynamic>?)?.map((e) => e.toString())?.toList() ?? [];
         List<String> employeeNames = [];
@@ -173,6 +182,9 @@ class _ProjectListState extends State<ProjectList> {
   void _deleteProject(String id) async {
     try {
       await _firestore.collection('projects').doc(id).delete();
+      setState(() {
+        _isLoading = true; // Set loading state before fetching projects again
+      });
       await _fetchProjects();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project deleted successfully')),
@@ -195,7 +207,11 @@ class _ProjectListState extends State<ProjectList> {
   void _navigateToAddProjectScreen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddProjectScreen()),
+      MaterialPageRoute(
+        builder: (context) => AddProjectScreen(
+          onProjectAdded: _fetchProjects, // Pass the fetchProjects function as callback
+        ),
+      ),
     );
   }
 
@@ -205,8 +221,11 @@ class _ProjectListState extends State<ProjectList> {
       appBar: AppBar(
         title: Text('Project List'),
         backgroundColor: Colors.grey,
-      ),backgroundColor: Colors.grey,
-      body: ListView.builder(
+      ),
+      backgroundColor: Colors.grey,
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
         itemCount: _projects.length,
         itemBuilder: (context, index) {
           final project = _projects[index];
@@ -272,6 +291,7 @@ class _ProjectListState extends State<ProjectList> {
     );
   }
 }
+
 class EditProjectScreen extends StatefulWidget {
   final String projectId;
 
