@@ -1,17 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:syncfusion_flutter_charts/charts.dart' as charts;
-import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
 import 'package:time_sheet_flutter_application/Employee_data.dart';
 import 'package:time_sheet_flutter_application/add_role.dart';
 import 'package:time_sheet_flutter_application/project_data.dart';
 import 'package:time_sheet_flutter_application/team.dart';
 import 'package:time_sheet_flutter_application/timesheetpaneladmin.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
+  @override
+  _DashboardScreenState createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late int _employeeCount = 0;
+  late int _projectCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      // Fetch employee count
+      final employeeQuery = await _firestore.collection('employees').get();
+      setState(() {
+        _employeeCount = employeeQuery.size;
+      });
+
+      // Fetch project count
+      final projectQuery = await _firestore.collection('projects').get();
+      setState(() {
+        _projectCount = projectQuery.size;
+      });
+    } catch (e) {
+      print('Failed to fetch data: $e');
+    }
+  }
+
+  Future<Map<String, int>?> _fetchDataFuture() async {
+    try {
+      // Fetch employee count
+      final employeeQuery = await _firestore.collection('employees').get();
+      final employeeCount = employeeQuery.size;
+
+      // Fetch project count
+      final projectQuery = await _firestore.collection('projects').get();
+      final projectCount = projectQuery.size;
+
+      return {
+        'employeeCount': employeeCount,
+        'projectCount': projectCount,
+      };
+    } catch (e) {
+      print('Failed to fetch data: $e');
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,89 +66,72 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Dashboard'),
         backgroundColor: Colors.blueGrey,
-      ),backgroundColor: Colors.grey,
+      ),
+      backgroundColor: Colors.grey,
       body: Container(
         color: Colors.grey,
-
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-          Container(
-
-          padding: EdgeInsets.all(16.0),
-          child: Table(
-            border: TableBorder.all(color: Colors.white54),
-            children: [
-              TableRow(
-                children: [
-                  TableCell(
-                    child: Container(
-                      padding: EdgeInsets.all(8.0),
-                      color: Colors.blueGrey,
-                      child: Text('hbjhbbjhbhjbbhjbjhb',style: TextStyle(color: Colors.blueGrey),),
+              Container(
+                padding: EdgeInsets.all(16.0),
+                child: Table(
+                  border: TableBorder.all(color: Colors.white54),
+                  children: [
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            color: Colors.blueGrey,
+                            child: Text(
+                              'Total Employees',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            color: Colors.blueGrey,
+                            child: Text(
+                              _employeeCount.toString(),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  TableCell(
-                    child: Container(
-                      height: 55,
-                      padding: EdgeInsets.all(8.0),
-                      color: Colors.blueGrey,
-                      child: Center(child: Text('Live Project',
-                        style: TextStyle(color: Colors.white ),)),
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            color: Colors.blueGrey,
+                            child: Text(
+                              'Total Projects',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            color: Colors.blueGrey,
+                            child: Text(
+                              _projectCount.toString(),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  TableCell(
-                    child: Container(
-                      padding: EdgeInsets.all(8.0),
-                      color: Colors.blueGrey,
-                      child: Text(
-                        'Complete Project',
-                        style: TextStyle(color: Colors.white),),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              TableRow(
-                children: [
-                  TableCell(
-                    child: Container(
-                      padding: EdgeInsets.all(8.0),
-                      color: Colors.blueGrey,
-                      child: Center(child: Text('Total Project',
-                        style: TextStyle(color: Colors.white),)),
-                    ),
-                  ),
-                  TableCell(
-                    child: Container(
-                      color: Colors.blueGrey,
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(child: Text('70',
-                        style: TextStyle(color: Colors.white),)),
-                    ),
-                  ),
-                  TableCell(
-                    child: Container(
-                      color: Colors.blueGrey,
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(child: Text('30',
-                        style: TextStyle(color: Colors.white),)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-              /*Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildPieChart(total: 70, complete: 50, live: 30),
-                  // Total, complete, and live projects
-                ],
-              ),*/
-              FutureBuilder<Map<String, int>>(
-                future: _fetchData(), // Fetch data asynchronously
+              FutureBuilder<Map<String, int>?>(
+                future: _fetchDataFuture(), // Fetch data asynchronously
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -111,11 +141,16 @@ class DashboardScreen extends StatelessWidget {
                     return Center(
                       child: Text('Error: ${snapshot.error}'),
                     );
+                  } else if (snapshot.data == null) {
+                    return Center(
+                      child: Text('No data available'),
+                    );
                   } else {
                     final data = snapshot.data!;
                     return GridView.count(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(), // Disable GridView scrolling
+                      physics: NeverScrollableScrollPhysics(),
+                      // Disable GridView scrolling
                       crossAxisCount: 2,
                       padding: EdgeInsets.all(16.0),
                       children: [
@@ -123,35 +158,41 @@ class DashboardScreen extends StatelessWidget {
                             data['employeeCount'] ?? 0, Colors.blue, () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => EmployeeList()), // Navigate to EmployeeList screen
+                                MaterialPageRoute(
+                                    builder: (context) => EmployeeList()),
                               );
                             }),
                         _buildGridItem(Icons.assignment, 'Projects',
                             data['projectCount'] ?? 0, Colors.green, () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ProjectList()), // Navigate to EmployeeList screen
+                                MaterialPageRoute(
+                                    builder: (context) => ProjectList()),
                               );
                             }),
                         _buildGridItem(
                             Icons.work, 'Roles', null, Colors.orange, () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddRoleScreen()), // Navigate to EmployeeList screen
+                            MaterialPageRoute(
+                                builder: (context) => AddRoleScreen()),
                           );
                         }),
                         _buildGridItem(
                             Icons.group, 'Teams', null, Colors.red, () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddTeamScreen()), // Navigate to EmployeeList screen
+                            MaterialPageRoute(
+                                builder: (context) => AddTeamScreen()),
                           );
                         }),
                         _buildGridItem(
-                            Icons.timelapse, 'Timesheets', null, Colors.purple, () {
+                            Icons.timelapse, 'Timesheets', null,
+                            Colors.purple, () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => timesheetPanelScreen()), // Navigate to EmployeeList screen
+                            MaterialPageRoute(
+                                builder: (context) => timesheetPanelScreen()),
                           );
                         }),
                       ],
@@ -162,9 +203,7 @@ class DashboardScreen extends StatelessWidget {
             ],
           ),
         ),
-
       ),
-
     );
   }
 
@@ -197,58 +236,4 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
-
-  Future<Map<String, int>> _fetchData() async {
-    try {
-      // Fetch employee count
-      final employeeQuery = await _firestore.collection('employees').get();
-      final employeeCount = employeeQuery.size;
-
-      // Fetch project count
-      final projectQuery = await _firestore.collection('projects').get();
-      final projectCount = projectQuery.size;
-
-      return {
-        'employeeCount': employeeCount,
-        'projectCount': projectCount,
-      };
-    } catch (e) {
-      throw ('Failed to fetch data: $e');
-    }
-  }
-
-  Widget _buildPieChart({
-    required double total,
-    required double complete,
-    required double live,
-  }) {
-    return Container(
-      height: 300,
-      width: 300,
-      child: charts.SfCircularChart(
-        series: <charts.CircularSeries>[
-          charts.PieSeries<_ChartData, String>(
-            dataSource: [
-              _ChartData('Total', total),
-              _ChartData('Complete', complete),
-              _ChartData('Live', live),
-            ],
-            xValueMapper: (_ChartData data, _) => data.category,
-            yValueMapper: (_ChartData data, _) => data.value,
-            dataLabelSettings: charts.DataLabelSettings(
-              isVisible: true,
-              labelPosition: ChartDataLabelPosition.outside ,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-}
-  class _ChartData {
-  _ChartData(this.category, this.value);
-
-  final String category;
-  final double value;
 }
