@@ -26,8 +26,9 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Project'),
-        backgroundColor: Colors.blue,
+        title: Text('Add Project',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -72,10 +73,14 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
             SizedBox(height: 16),
             Center(
               child: ElevatedButton(
+
                 onPressed: () {
                   _addProject();
                 },
-                child: Text('Add Project'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF232F34)),),
+
+                child: Text('Add Project',style: TextStyle(color: Colors.white),),
               ),
             ),
           ],
@@ -219,8 +224,8 @@ class _ProjectListState extends State<ProjectList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project List'),
-        backgroundColor: Colors.grey,
+        title: Text('Project List',style: TextStyle(color: Colors.white),),
+          backgroundColor: Color(0xFF232F34),
       ),
       backgroundColor: Colors.grey,
       body: _isLoading
@@ -240,24 +245,24 @@ class _ProjectListState extends State<ProjectList> {
                   color: Colors.white, // Border color
                   width: 1, // Border width
                 ),
-                color: Colors.blueGrey,
+                color: Color(0xFF4A6572)  ,
                 borderRadius: BorderRadius.circular(10), // Border radius
               ),
               padding: EdgeInsets.all(10),
               child: ExpansionTile(
-                title: Text(projectName),
-                subtitle: Text('Allocated Employees: ${allocatedEmployees.length}'),
+                title: Text(projectName, style: TextStyle(color: Colors.white)),
+                subtitle: Text('Allocated Employees: ${allocatedEmployees.length}',style: TextStyle(color: Colors.white),),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: Icon(Icons.edit,color: Colors.white,),
                       onPressed: () {
                         _editProject(project.id);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: Icon(Icons.delete,color: Colors.white,),
                       onPressed: () {
                         _deleteProject(project.id);
                       },
@@ -285,8 +290,9 @@ class _ProjectListState extends State<ProjectList> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF344955),
         onPressed: _navigateToAddProjectScreen,
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white,),
       ),
     );
   }

@@ -7,8 +7,9 @@ class timesheetPanelScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project Details:'),
-          backgroundColor: Colors.grey,
+        title: Text('Project Details:',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
+
       ),backgroundColor: Colors.grey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

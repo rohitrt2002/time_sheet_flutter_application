@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_sheet_flutter_application/Dashboard_Screen.dart';
 import 'package:time_sheet_flutter_application/Employee_data.dart';
@@ -43,11 +44,12 @@ class _AdminPanelState extends State<AdminPanel> {
       Scaffold.of(context).openDrawer();
     },
     child: Scaffold(
-      appBar: AppBar(title: const Text("Admin Panel"),
-        backgroundColor: Colors.lightBlue ,
+      appBar: AppBar(title: const Text("Admin Panel",style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF344955),
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app), // Use any icon you prefer for the profile
+            icon: Icon(Icons.exit_to_app,color: Colors.white,), // Use any icon you prefer for the profile
             onPressed: () async {
               try {
                 await FirebaseAuth.instance.signOut();
@@ -71,6 +73,7 @@ class _AdminPanelState extends State<AdminPanel> {
         child: _widgetOptions[_selectedIndex],
       ),
       drawer: Container(
+
         child: Drawer(
 
           child: ListView(
@@ -78,7 +81,7 @@ class _AdminPanelState extends State<AdminPanel> {
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Color(0xFF344955),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -93,7 +96,13 @@ class _AdminPanelState extends State<AdminPanel> {
                 ),
               ),
               ListTile(
-                  title: const Text('Dashboard'),
+                  title:Row(
+                    children: [
+                      Icon(Icons.dashboard,color: Colors.black,), // Add icon here
+                      SizedBox(width: 10),
+                      const Text('Dashboard'),
+                    ],
+                  ),
                   selected: _selectedIndex == 0,
                   onTap: () {
                     // Update the state of the app
@@ -103,7 +112,13 @@ class _AdminPanelState extends State<AdminPanel> {
                   }
               ),
               ListTile(
-                title: const Text('Employee'),
+                title: Row(
+                  children: [
+                    Icon(Icons.person,color: Colors.black,),
+                    SizedBox(width: 10),
+                    const Text('Employee'),
+                  ],
+                ),
                   selected: _selectedIndex == 1,
                   onTap: () {
                     // Update the state of the app
@@ -113,7 +128,13 @@ class _AdminPanelState extends State<AdminPanel> {
                   }
               ),
               ListTile(
-                title: const Text('Project'),
+                title: Row(
+                  children: [
+                    Icon(Icons.assignment,color: Colors.black,),
+                    SizedBox(width: 10),
+                    const Text('Project'),
+                  ],
+                ),
                 selected: _selectedIndex == 2,
                   onTap: () {
                     // Update the state of the app
@@ -123,7 +144,13 @@ class _AdminPanelState extends State<AdminPanel> {
                   }
               ),
               ListTile(
-                title: const Text('Role'),
+                title: Row(
+                  children: [
+                    Icon(Icons.work,color: Colors.black,),
+                    SizedBox(width: 10),
+                    const Text('Role'),
+                  ],
+                ),
                 selected: _selectedIndex == 3,
                   onTap: () {
                     // Update the state of the app
@@ -133,7 +160,13 @@ class _AdminPanelState extends State<AdminPanel> {
                   }
               ),
               ListTile(
-                title: const Text('Team'),
+                title: Row(
+                  children: [
+                    Icon(Icons.group,color: Colors.black,),
+                    SizedBox(width: 10),
+                    const Text('Team'),
+                  ],
+                ),
                 selected: _selectedIndex == 4,
                   onTap: () {
                     // Update the state of the app
@@ -143,7 +176,13 @@ class _AdminPanelState extends State<AdminPanel> {
                   }
               ),
               ListTile(
-                title: const Text('Teamsheets'),
+                title: Row(
+                  children: [
+                    Icon(Icons.timelapse,color: Colors.black,),
+                    SizedBox(width: 10),
+                    const Text('Teamsheets'),
+                  ],
+                ),
                 selected: _selectedIndex == 5,
                   onTap: () {
                     // Update the state of the app
@@ -155,12 +194,11 @@ class _AdminPanelState extends State<AdminPanel> {
 
 
 
-
             ],
           ),
-        ),
+
       ),
-    ));
+    )));
   }
 
   void _onItemTapped(int index) {

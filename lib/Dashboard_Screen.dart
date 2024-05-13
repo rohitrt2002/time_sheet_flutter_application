@@ -64,8 +64,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
-        backgroundColor: Colors.blueGrey,
+        title: Text('Dashboard',style: TextStyle(color: Colors.white),),
+
+        backgroundColor: Color(0xFF232F34),
       ),
       backgroundColor: Colors.grey,
       body: Container(
@@ -84,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         TableCell(
                           child: Container(
                             padding: EdgeInsets.all(8.0),
-                            color: Colors.blueGrey,
+                            color: Color(0xFF4A6572),
                             child: Text(
                               'Total Employees',
                               style: TextStyle(color: Colors.white),
@@ -94,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         TableCell(
                           child: Container(
                             padding: EdgeInsets.all(8.0),
-                            color: Colors.blueGrey,
+                              color: Color(0xFF4A6572),
                             child: Text(
                               _employeeCount.toString(),
                               style: TextStyle(color: Colors.white),
@@ -108,7 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         TableCell(
                           child: Container(
                             padding: EdgeInsets.all(8.0),
-                            color: Colors.blueGrey,
+                            color: Color(0xFF4A6572),
                             child: Text(
                               'Total Projects',
                               style: TextStyle(color: Colors.white),
@@ -118,7 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         TableCell(
                           child: Container(
                             padding: EdgeInsets.all(8.0),
-                            color: Colors.blueGrey,
+                            color: Color(0xFF4A6572),
                             child: Text(
                               _projectCount.toString(),
                               style: TextStyle(color: Colors.white),
@@ -212,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return InkWell(
       onTap: onTap,
       child: Card(
-        color: Colors.blueGrey,
+        color: Color(0xFF4A6572),
         elevation: 3.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),

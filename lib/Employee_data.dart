@@ -111,11 +111,13 @@ class _EmployeeListState extends State<EmployeeList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Employee List'),
-        backgroundColor: Colors.white54   ,
+        title: Text('Employee List',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
+        iconTheme: IconThemeData(color: Colors.white),
       ),backgroundColor: Colors.grey ,
       body: _buildEmployeeList(),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF344955),
         onPressed: () {
           // Navigate to the screen where you can add a new employee
           Navigator.of(context).push(
@@ -124,7 +126,7 @@ class _EmployeeListState extends State<EmployeeList> {
 
           );
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white,),
       ),
     );
   }
@@ -146,25 +148,25 @@ class _EmployeeListState extends State<EmployeeList> {
                 color: Colors.white  , // Border color
                 width: 1, // Border width
               ),
-              color: Colors.blueGrey  ,
+                color: Color(0xFF4A6572)  ,
               borderRadius: BorderRadius.circular(10), // Border radius
             ),
 
             padding: EdgeInsets.all(10), // Padding inside the container
             child: ListTile(
-              title: Text(' $firstName $lastName'),
-              subtitle: Text(email),
+              title: Text('$firstName $lastName',style: TextStyle(fontSize: 19,color: Colors.white)),
+              subtitle: Text(email,style: TextStyle(color: Colors.white),),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: Icon(Icons.edit,color: Colors.white),
                     onPressed: () {
                       _editEmployee(employee!);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: Icon(Icons.delete,color: Colors.white),
                     onPressed: () {
                       _deleteEmployee(employee!.id);
                     },
@@ -307,8 +309,9 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('ADD Employee'),
-          backgroundColor: Colors.blue,
+          title: Text('ADD Employee',style: TextStyle(color: Colors.white),),
+          backgroundColor: Color(0xFF232F34),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
         body: Form (
           key: _formKey,
@@ -591,7 +594,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                       style: TextStyle(fontSize: 20), // Increase font size
                     ),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
+                      foregroundColor: Colors.white, backgroundColor: Color(0xFF232F34), // Text color
                       elevation: 10, // Button's elevation when it's pressed
                     ),
                   ),

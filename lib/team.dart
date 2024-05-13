@@ -51,8 +51,8 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Team:'),
-        backgroundColor: Colors.white54,
+        title: Text('Select Team:',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
       ),
       backgroundColor: Colors.grey,
       body: Column(
@@ -70,17 +70,17 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                       width: 1, // Border width
                     ),
                     borderRadius: BorderRadius.circular(10), // Border radius
-                    color: Colors.blueGrey,
+                    color: Color(0xFF4A6572),
                   ),
                   padding: EdgeInsets.all(10),
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: ListTile(
-                      title: Text(team),
+                      title: Text(team, style: TextStyle(color: Colors.white),),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ElevatedButton.icon(
+                          IconButton(
                             onPressed: () {
                               setState(() {
                                 _selectedTeam = team;
@@ -93,23 +93,17 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                               );
                             },
                             icon: Icon(Icons.edit, color: Colors.white),
-                            label: Text(''),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
-                          ),
+
+                          ) ,
                           SizedBox(width: 8),
-                          ElevatedButton.icon(
+                          IconButton(
                             onPressed: () {
                               setState(() {
                                 _deleteTeam(team);
                               });
                             },
                             icon: Icon(Icons.delete, color: Colors.white),
-                            label: Text(''),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
+
                           ),
                         ],
                       ),
@@ -122,6 +116,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF232F34),
         onPressed: () async {
 
           final newTeam = await Navigator.of(context).push<String>(
@@ -135,7 +130,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
             });
           }
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
@@ -217,7 +212,9 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Team'),
+        title: Text('Add New Team', style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -234,6 +231,8 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
             SizedBox(height: 16),
             Center(
               child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF232F34)),),
                 onPressed: () async {
                   String newTeam = _teamController.text.trim();
                   if (newTeam.isNotEmpty) {
@@ -246,7 +245,7 @@ class _AddNewTeamScreenState extends State<AddNewTeamScreen> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('Add Team'),
+                child: Text('Add Team',style: TextStyle(color: Colors.white),),
               ),
             ),
           ],
