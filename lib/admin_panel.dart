@@ -48,7 +48,7 @@ class _AdminPanelState extends State<AdminPanel> {
         backgroundColor: Color(0xFF344955),
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
+         /* IconButton(
             icon: Icon(Icons.exit_to_app,color: Colors.white,), // Use any icon you prefer for the profile
             onPressed: () async {
               try {
@@ -66,7 +66,7 @@ class _AdminPanelState extends State<AdminPanel> {
                 // Handle error if necessary
               }
             },
-          ),
+          ),*/
     ],),
 
       body: Center(
@@ -192,7 +192,32 @@ class _AdminPanelState extends State<AdminPanel> {
                   }
               ),
 
-
+              IconButton(
+                icon: Row(
+                  children: [
+                    SizedBox(width: 10),
+                    Icon(Icons.logout ,color: Colors.black,),
+                    SizedBox(width: 10),
+                    const Text('logout',style: TextStyle(color: Colors.black,fontSize:18),)
+                  ],
+                ), // Use any icon you prefer for the profile
+                onPressed: () async {
+                  try {
+                    await FirebaseAuth.instance.signOut();
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.remove('email');
+                    prefs.remove('password');
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => LoginDemo(), // Replace 'YourLoginPage()' with the actual constructor of your login page
+                      ),
+                    );
+                  } catch (e) {
+                    print('Error signing out: $e');
+                    // Handle error if necessary
+                  }
+                },
+              ),
 
             ],
           ),

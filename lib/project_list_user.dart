@@ -12,7 +12,8 @@ class ProjectListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project List'),
+        title: Text('Project List',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -37,9 +38,19 @@ class ProjectListScreen extends StatelessWidget {
               final projectData = projects[index].data() as Map<String, dynamic>;
               final projectName = projectData['projectName'] ?? 'Unnamed Project';
               // You can display more details about the project if needed
-              return ListTile(
-                title: Text(projectName),
-                // Add more ListTile properties as needed
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white  , // Border color
+                    width: 1, // Border width
+                  ),
+                  color: Color(0xFF4A6572)  ,
+                  borderRadius: BorderRadius.circular(10), // Border radius
+                ),
+                child: ListTile(
+                  title: Text(projectName,style: TextStyle(color: Colors.white,fontSize: 20),),
+                  // Add more ListTile properties as needed
+                ),
               );
             },
           );

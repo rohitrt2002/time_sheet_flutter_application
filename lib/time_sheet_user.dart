@@ -11,7 +11,8 @@ class ProjectListScreen1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Time sheet Project List'),
+        title: Text('Time sheet Project List',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -35,16 +36,37 @@ class ProjectListScreen1 extends StatelessWidget {
             itemBuilder: (context, index) {
               final projectData = projects[index].data() as Map<String, dynamic>;
               final projectName = projectData['projectName'] ?? 'Unnamed Project';
-              return ListTile(
-                title: Text(projectName),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProjectDetailsScreen(projectName: projectName),
-                    ),
-                  );
-                },
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white  , // Border color
+                    width: 1, // Border width
+                  ),
+                  color: Color(0xFF4A6572)  ,
+                  borderRadius: BorderRadius.circular(10), // Border radius
+                ),
+                child: ListTile(
+                  title: Text(projectName,style: TextStyle(color: Colors.white,fontSize: 20),),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.task,color: Colors.white),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProjectDetailsScreen(projectName: projectName),
+                            ),
+                          );
+                        },
+                      ),
+
+                    ],
+                  ),
+
+
+                ),
               );
             },
           );
@@ -97,39 +119,69 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project Details'),
+        title: Text('Project Details',style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF232F34),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Project Name: ${widget.projectName}'),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  width: 300, // Adjust the width as needed
+                  height: 50, // Adjust the height as needed
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white, // Border color
+                      width: 1, // Border width
+                    ),
+                    color: Color(0xFF4A6572),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Project Name - ${widget.projectName}',
+                      style: TextStyle(color: Colors.white,fontSize: 20), // Adjust the font size as needed
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
 
+                TextField(
+                  controller: payTaskController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Pay Task',
+                  ),
+                  minLines: 5, // Set the minimum number of lines
+                  maxLines: 5, // Set the maximum number of lines to null for unlimited lines
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: withoutPayTaskController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Without Pay Task',
+                  ),
+                    minLines: 5, // Set the minimum number of lines
+                    maxLines: 5,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Color(0xFF232F34),elevation: 10,),
+                  onPressed: () {
+                    _saveProjectDetails(widget.projectName, payTaskController.text, withoutPayTaskController.text);
+                  },
 
-            SizedBox(height: 20),
-            TextField(
-              controller: payTaskController,
-              decoration: InputDecoration(
-                labelText: 'Pay Task',
-              ),
+                  child: Text('Save'),
+                ),
+              ],
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: withoutPayTaskController,
-              decoration: InputDecoration(
-                labelText: 'Without Pay Task',
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _saveProjectDetails(widget.projectName, payTaskController.text, withoutPayTaskController.text);
-              },
-              child: Text('Save'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

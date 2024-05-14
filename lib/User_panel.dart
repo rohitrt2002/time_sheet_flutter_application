@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,8 +54,10 @@ class _UserPanelState extends State<UserPanel> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text("User Page"),
-        actions: [
+        title: Text("Employee",style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF344955),
+        iconTheme: IconThemeData(color: Colors.white),
+        /*actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app), // Use any icon you prefer for the profile
               onPressed: () async {
@@ -73,7 +77,7 @@ class _UserPanelState extends State<UserPanel> {
                 }
               },
           ),
-        ],
+        ],*/
       ),
       body: Center(
         child: _widgetOptions[_selectedIndex],
@@ -84,13 +88,13 @@ class _UserPanelState extends State<UserPanel> {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Color(0xFF344955),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('$firstName $lastName'),
+                  Text('$firstName $lastName',style: TextStyle(color: Colors.white,fontSize: 20, ),),
                   Image.asset(
                     'assets/image/icons8-flutter-192(-xxxhdpi).png',
                     height: 100,
@@ -100,7 +104,13 @@ class _UserPanelState extends State<UserPanel> {
               ),
             ),
             ListTile(
-              title: const Text('Project List'),
+              title: Row(
+                children: [
+                  Icon(Icons.assignment,color: Colors.black,), // Add icon here
+                  SizedBox(width: 10),
+                  const Text('Project List'),
+                ],
+              ),
               selected: _selectedIndex == 0,
                 onTap: () {
                   // Update the state of the app
@@ -110,7 +120,13 @@ class _UserPanelState extends State<UserPanel> {
                 }
             ),
             ListTile(
-              title: const Text('Time sheet List'),
+              title: Row(
+                children: [
+                  Icon(Icons.timelapse,color: Colors.black,),
+                  SizedBox(width: 10),
+                  const Text('Time sheet List'),
+                ],
+              ),
               selected: _selectedIndex == 1,
                 onTap: () {
                   // Update the state of the app
@@ -118,6 +134,32 @@ class _UserPanelState extends State<UserPanel> {
                   // Then close the drawer
                   Navigator.pop(context);
                 }
+            ),
+            IconButton(
+              icon: Row(
+                children: [
+                  SizedBox(width: 10),
+                  Icon(Icons.logout ,color: Colors.black,),
+                  SizedBox(width: 10),
+                  const Text('logout',style: TextStyle(color: Colors.black,fontSize:18),)
+                ],
+              ), // Use any icon you prefer for the profile
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.remove('email');
+                  prefs.remove('password');
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => LoginDemo(), // Replace 'YourLoginPage()' with the actual constructor of your login page
+                    ),
+                  );
+                } catch (e) {
+                  print('Error signing out: $e');
+                  // Handle error if necessary
+                }
+              },
             ),
           ],
         ),
